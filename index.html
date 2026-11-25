@@ -1,14 +1,18 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГДЗ: Решатель простых уравнений</title>
+    <title>ГДЗ: Яркий решатель уравнений</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Яркий радужно-фиолетовый градиентный фон */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff758c 100%);
+            color: #2d3748;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,105 +21,170 @@
             padding: 20px;
         }
         .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            max-width: 540px;
             width: 100%;
+            backdrop-filter: blur(10px);
         }
         h1 {
             text-align: center;
-            color: #2c3e50;
             margin-top: 0;
-            font-size: 24px;
+            font-size: 28px;
+            /* Градиентный текст заголовка */
+            background: linear-gradient(90deg, #ff512f, #dd2476);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
         }
         p.subtitle {
             text-align: center;
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 20px;
+            color: #718096;
+            font-size: 15px;
+            margin-bottom: 25px;
         }
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 18px;
         }
         input[type="text"] {
             flex: 1;
-            padding: 12px;
+            padding: 14px 16px;
             font-size: 18px;
-            border: 2px solid #dce1e6;
-            border-radius: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            background-color: #f7fafc;
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
         }
         input[type="text"]:focus {
-            border-color: #3498db;
+            border-color: #ff512f;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 81, 47, 0.15);
         }
         button {
-            padding: 12px 20px;
+            padding: 14px 24px;
             font-size: 16px;
             font-weight: bold;
-            background-color: #3498db;
+            background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(221, 36, 118, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         button:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(221, 36, 118, 0.6);
+        }
+        button:active {
+            transform: translateY(0);
         }
         .examples {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
             font-size: 13px;
-            color: #7f8c8d;
-            margin-bottom: 20px;
+            color: #4a5568;
+            margin-bottom: 25px;
         }
         .examples span {
-            color: #3498db;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            color: #1a202c;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            text-decoration: underline;
-            margin-right: 8px;
+            transition: transform 0.2s, filter 0.2s;
+        }
+        .examples span:hover {
+            transform: scale(1.05);
+            filter: brightness(0.95);
         }
         .result-box {
-            background-color: #f8f9fa;
-            border-left: 4px solid #2ecc71;
-            padding: 15px;
-            border-radius: 6px;
             display: none;
+            animation: fadeIn 0.4s ease-out;
         }
-        .result-box.error {
-            border-left-color: #e74c3c;
-            background-color: #fdf3f2;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        /* Цветные карточки для каждого шага */
         .step {
-            margin: 8px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             font-size: 16px;
+            line-height: 1.5;
+        }
+        .step-0 {
+            background-color: #edf2f7;
+            border-left: 5px solid #718096;
+        }
+        .step-1 {
+            background-color: #ebf8ff;
+            border-left: 5px solid #3182ce;
+            color: #2c5282;
+        }
+        .step-2 {
+            background-color: #faf5ff;
+            border-left: 5px solid #805ad5;
+            color: #553c9a;
+        }
+        .step-3 {
+            background-color: #fffaf0;
+            border-left: 5px solid #dd6b20;
+            color: #9c4221;
         }
         .final-answer {
             font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 176, 155, 0.35);
+            margin-top: 15px;
+        }
+        .error-box {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
             font-weight: bold;
-            color: #27ae60;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(255, 65, 108, 0.35);
+        }
+        .math-highlight {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>ГДЗ: Решатель уравнений</h1>
-    <p class="subtitle">Введите линейное уравнение с переменной <b>x</b></p>
+    <h1>✨ ГДЗ: Супер-Решатель</h1>
+    <p class="subtitle">Введи уравнение с переменной <b>x</b> и получи яркий разбор</p>
 
     <div class="input-group">
         <input type="text" id="equationInput" placeholder="Например: 2x + 5 = 15" value="2x + 5 = 15">
-        <button onclick="solveEquation()">Решить</button>
+        <button onclick="solveEquation()">Решить 🚀</button>
     </div>
 
     <div class="examples">
-        Примеры: 
+        <b>Примеры:</b>
         <span onclick="setExample('3x - 7 = 14')">3x - 7 = 14</span>
         <span onclick="setExample('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</span>
         <span onclick="setExample('-2x + 8 = 0')">-2x + 8 = 0</span>
@@ -131,14 +200,11 @@
     }
 
     function parseSide(side) {
-        // Убираем пробелы и заменяем русскую 'х' на английскую 'x'
         side = side.replace(/\s+/g, '').replace(/х/gi, 'x').toLowerCase();
-        // Разбиваем на слагаемые, сохраняя знаки + и -
         const terms = side.match(/[+-]?[^+-]+/g) || [];
         
         let xCoeff = 0;
-
-      let constant = 0;
+        let constant = 0;
 
         for (let term of terms) {
             if (term.includes('x')) {
@@ -157,59 +223,55 @@
         const input = document.getElementById('equationInput').value;
         const resultDiv = document.getElementById('result');
         resultDiv.style.display = 'block';
-        resultDiv.className = 'result-box';
 
         if (!input.includes('=')) {
-            showError('Ошибка: в уравнении должен быть знак равенства (=).');
+            showError('⚠️ Ошибка: в уравнении должен быть знак равенства (=).');
             return;
         }
 
         const sides = input.split('=');
-        if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) {
-            showError('Ошибка: проверьте правильность записи уравнения.');
+        if (sides.length !== 2 || !sides.trim() || !sides.trim()) {
+            showError('⚠️ Ошибка: проверь правильность записи уравнения.');
             return;
         }
 
         try {
-            const left = parseSide(sides[0]);
-            const right = parseSide(sides[1]);
+            const left = parseSide(sides);
+            const right = parseSide(sides);
 
             if (isNaN(left.x) || isNaN(left.c) || isNaN(right.x) || isNaN(right.c)) {
-                showError('Ошибка: не удалось распознать числа. Используйте только числа, знаки +, - и букву x.');
+                showError('⚠️ Ошибка: используй только числа, знаки +, - и букву x.');
                 return;
             }
 
-            // Переносим x влево, числа вправо
             const totalX = left.x - right.x;
             const totalC = right.c - left.c;
-
-            let stepsHtml = `<div class="step"><b>Исходное уравнение:</b> ${input}</div>`;
-            stepsHtml += `<div class="step"><b>1. Переносим слагаемые с x влево, а числа вправо:</b><br> ${left.x}x ${right.x >= 0 ? '- ' + right.x : '+ ' + Math.abs(right.x)}x = ${right.c} ${left.c >= 0 ? '- ' + left.c : '+ ' + Math.abs(left.c)}</div>`;
-            stepsHtml += `<div class="step"><b>2. Приводим подобные слагаемые:</b><br> ${totalX}x = ${totalC}</div>`;
+            let stepsHtml = `<div class="step step-0">📝 <b>Уравнение:</b> <span class="math-highlight">${input}</span></div>`;
+            stepsHtml += `<div class="step step-1">🔵 <b>Шаг 1. Переносим x влево, числа вправо:</b><br> <span class="math-highlight">${left.x}x ${right.x >= 0 ? '- ' + right.x : '+ ' + Math.abs(right.x)}x = ${right.c} ${left.c >= 0 ? '- ' + left.c : '+ ' + Math.abs(left.c)}</span></div>`;
+            stepsHtml += `<div class="step step-2">🟣 <b>Шаг 2. Приводим подобные слагаемые:</b><br> <span class="math-highlight">${totalX}x = ${totalC}</span></div>`;
 
             if (totalX === 0) {
                 if (totalC === 0) {
-                    stepsHtml += `<div class="final-answer">Ответ: x — любое число (бесконечно много решений)</div>`;
+                    stepsHtml += `<div class="final-answer">🎉 Ответ: x — любое число</div>`;
                 } else {
-                    stepsHtml += `<div class="final-answer">Ответ: корней нет (на ноль делить нельзя)</div>`;
+                    stepsHtml += `<div class="final-answer" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🚫 Ответ: корней нет</div>`;
                 }
             } else {
-                const answer = Number((totalC / totalX).toFixed(4)); // Округляем до 4 знаков, убирая лишние нули
-                stepsHtml += `<div class="step"><b>3. Делим правую часть на коэффициент при x:</b><br> x = ${totalC} / ${totalX}</div>`;
-                stepsHtml += `<div class="final-answer">Ответ: x = ${answer}</div>`;
+                const answer = Number((totalC / totalX).toFixed(4));
+                stepsHtml += `<div class="step step-3">🟠 <b>Шаг 3. Находим x делением:</b><br> <span class="math-highlight">x = ${totalC} / ${totalX}</span></div>`;
+                stepsHtml += `<div class="final-answer">✅ Ответ: x = ${answer}</div>`;
             }
 
             resultDiv.innerHTML = stepsHtml;
 
         } catch (e) {
-            showError('Произошла ошибка при вычислении. Проверьте формат ввода.');
+            showError('⚠️ Произошла ошибка при вычислении.');
         }
     }
 
     function showError(msg) {
         const resultDiv = document.getElementById('result');
-        resultDiv.className = 'result-box error';
-        resultDiv.innerHTML = `<b>${msg}</b>`;
+        resultDiv.innerHTML = `<div class="error-box">${msg}</div>`;
     }
 </script>
 
