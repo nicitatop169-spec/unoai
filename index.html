@@ -10,7 +10,6 @@
         }
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            /* Яркий радужно-фиолетовый градиентный фон */
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff758c 100%);
             color: #2d3748;
             display: flex;
@@ -33,7 +32,6 @@
             text-align: center;
             margin-top: 0;
             font-size: 28px;
-            /* Градиентный текст заголовка */
             background: linear-gradient(90deg, #ff512f, #dd2476);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -116,7 +114,6 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Цветные карточки для каждого шага */
         .step {
             padding: 12px 16px;
             border-radius: 12px;
@@ -130,7 +127,37 @@
         }
         .step-1 {
             background-color: #ebf8ff;
-            border-left: 5px solid #3182ce;
+            stepsHtml += `<div class="step step-1">🔵 <b>Шаг 1. Переносим x влево, числа вправо:</b><br> <span class="math-highlight">${left.x}x ${right.x >= 0 ? '- ' + right.x : '+ ' + Math.abs(right.x)}x = ${right.c} ${left.c >= 0 ? '- ' + left.c : '+ ' + Math.abs(left.c)}</span></div>`;
+            stepsHtml += `<div class="step step-2">🟣 <b>Шаг 2. Приводим подобные слагаемые:</b><br> <span class="math-highlight">${totalX}x = ${totalC}</span></div>`;
+
+            if (totalX === 0) {
+                if (totalC === 0) {
+                    stepsHtml += `<div class="final-answer">🎉 Ответ: x — любое число</div>`;
+                } else {
+                    stepsHtml += `<div class="final-answer" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🚫 Ответ: корней нет</div>`;
+                }
+            } else {
+                const answer = Number((totalC / totalX).toFixed(4));
+                stepsHtml += `<div class="step step-3">🟠 <b>Шаг 3. Находим x делением:</b><br> <span class="math-highlight">x = ${totalC} / ${totalX}</span></div>`;
+                stepsHtml += `<div class="final-answer">✅ Ответ: x = ${answer}</div>`;
+            }
+
+            resultDiv.innerHTML = stepsHtml;
+
+        } catch (e) {
+            showError('⚠️ Произошла ошибка при вычислении.');
+        }
+    }
+
+    function showError(msg) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `<div class="error-box">${msg}</div>`;
+    }
+</script>
+
+</body>
+</html>
+        border-left: 5px solid #3182ce;
             color: #2c5282;
         }
         .step-2 {
@@ -179,8 +206,8 @@
     <p class="subtitle">Введи уравнение с переменной <b>x</b> и получи яркий разбор</p>
 
     <div class="input-group">
-        <input type="text" id="equationInput" placeholder="Например: 2x + 5 = 15" value="2x + 5 = 15">
-        <button onclick="solveEquation()">Решить 🚀</button>
+        <input type="text" id="equationInput" placeholder="Например: 2x + 5 = 15" value="2x + 5 = 15" onkeydown="if(event.key === 'Enter') solveEquation()">
+        <button type="button" onclick="solveEquation()">Решить 🚀</button>
     </div>
 
     <div class="examples">
@@ -230,14 +257,14 @@
         }
 
         const sides = input.split('=');
-        if (sides.length !== 2 || !sides.trim() || !sides.trim()) {
+        if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) {
             showError('⚠️ Ошибка: проверь правильность записи уравнения.');
             return;
         }
 
         try {
-            const left = parseSide(sides);
-            const right = parseSide(sides);
+            const left = parseSide(sides[0]);
+            const right = parseSide(sides[1]);
 
             if (isNaN(left.x) || isNaN(left.c) || isNaN(right.x) || isNaN(right.c)) {
                 showError('⚠️ Ошибка: используй только числа, знаки +, - и букву x.');
@@ -246,34 +273,5 @@
 
             const totalX = left.x - right.x;
             const totalC = right.c - left.c;
+
             let stepsHtml = `<div class="step step-0">📝 <b>Уравнение:</b> <span class="math-highlight">${input}</span></div>`;
-            stepsHtml += `<div class="step step-1">🔵 <b>Шаг 1. Переносим x влево, числа вправо:</b><br> <span class="math-highlight">${left.x}x ${right.x >= 0 ? '- ' + right.x : '+ ' + Math.abs(right.x)}x = ${right.c} ${left.c >= 0 ? '- ' + left.c : '+ ' + Math.abs(left.c)}</span></div>`;
-            stepsHtml += `<div class="step step-2">🟣 <b>Шаг 2. Приводим подобные слагаемые:</b><br> <span class="math-highlight">${totalX}x = ${totalC}</span></div>`;
-
-            if (totalX === 0) {
-                if (totalC === 0) {
-                    stepsHtml += `<div class="final-answer">🎉 Ответ: x — любое число</div>`;
-                } else {
-                    stepsHtml += `<div class="final-answer" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🚫 Ответ: корней нет</div>`;
-                }
-            } else {
-                const answer = Number((totalC / totalX).toFixed(4));
-                stepsHtml += `<div class="step step-3">🟠 <b>Шаг 3. Находим x делением:</b><br> <span class="math-highlight">x = ${totalC} / ${totalX}</span></div>`;
-                stepsHtml += `<div class="final-answer">✅ Ответ: x = ${answer}</div>`;
-            }
-
-            resultDiv.innerHTML = stepsHtml;
-
-        } catch (e) {
-            showError('⚠️ Произошла ошибка при вычислении.');
-        }
-    }
-
-    function showError(msg) {
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = `<div class="error-box">${msg}</div>`;
-    }
-</script>
-
-</body>
-</html>
