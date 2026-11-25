@@ -1,1 +1,217 @@
+    <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГДЗ: Решатель простых уравнений</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #dce1e6;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .examples {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .examples span {
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-right: 8px;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .result-box.error {
+            border-left-color: #e74c3c;
+            background-color: #fdf3f2;
+        }
+        .step {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        .final-answer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #27ae60;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h1>ГДЗ: Решатель уравнений</h1>
+    <p class="subtitle">Введите линейное уравнение с переменной <b>x</b></p>
+
+    <div class="input-group">
+        <input type="text" id="equationInput" placeholder="Например: 2x + 5 = 15" value="2x + 5 = 15">
+        <button onclick="solveEquation()">Решить</button>
+    </div>
+
+    <div class="examples">
+        Примеры: 
+        <span onclick="setExample('3x - 7 = 14')">3x - 7 = 14</span>
+        <span onclick="setExample('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</span>
+        <span onclick="setExample('-2x + 8 = 0')">-2x + 8 = 0</span>
+    </div>
+
+    <div id="result" class="result-box"></div>
+</div>
+
+<script>
+    function setExample(eq) {
+        document.getElementById('equationInput').value = eq;
+        solveEquation();
+    }
+
+    function parseSide(side) {
+        // Убираем пробелы и заменяем русскую 'х' на английскую 'x'
+        side = side.replace(/\s+/g, '').replace(/х/gi, 'x').toLowerCase();
+        // Разбиваем на слагаемые, сохраняя знаки + и -
+        const terms = side.match(/[+-]?[^+-]+/g) || [];
+        
+        let xCoeff = 0;
+
+      let constant = 0;
+
+        for (let term of terms) {
+            if (term.includes('x')) {
+                let coeffStr = term.replace('x', '');
+                if (coeffStr === '' || coeffStr === '+') xCoeff += 1;
+                else if (coeffStr === '-') xCoeff -= 1;
+                else xCoeff += parseFloat(coeffStr);
+            } else {
+                constant += parseFloat(term);
+            }
+        }
+        return { x: xCoeff, c: constant };
+    }
+
+    function solveEquation() {
+        const input = document.getElementById('equationInput').value;
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'result-box';
+
+        if (!input.includes('=')) {
+            showError('Ошибка: в уравнении должен быть знак равенства (=).');
+            return;
+        }
+
+        const sides = input.split('=');
+        if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) {
+            showError('Ошибка: проверьте правильность записи уравнения.');
+            return;
+        }
+
+        try {
+            const left = parseSide(sides[0]);
+            const right = parseSide(sides[1]);
+
+            if (isNaN(left.x) || isNaN(left.c) || isNaN(right.x) || isNaN(right.c)) {
+                showError('Ошибка: не удалось распознать числа. Используйте только числа, знаки +, - и букву x.');
+                return;
+            }
+
+            // Переносим x влево, числа вправо
+            const totalX = left.x - right.x;
+            const totalC = right.c - left.c;
+
+            let stepsHtml = `<div class="step"><b>Исходное уравнение:</b> ${input}</div>`;
+            stepsHtml += `<div class="step"><b>1. Переносим слагаемые с x влево, а числа вправо:</b><br> ${left.x}x ${right.x >= 0 ? '- ' + right.x : '+ ' + Math.abs(right.x)}x = ${right.c} ${left.c >= 0 ? '- ' + left.c : '+ ' + Math.abs(left.c)}</div>`;
+            stepsHtml += `<div class="step"><b>2. Приводим подобные слагаемые:</b><br> ${totalX}x = ${totalC}</div>`;
+
+            if (totalX === 0) {
+                if (totalC === 0) {
+                    stepsHtml += `<div class="final-answer">Ответ: x — любое число (бесконечно много решений)</div>`;
+                } else {
+                    stepsHtml += `<div class="final-answer">Ответ: корней нет (на ноль делить нельзя)</div>`;
+                }
+            } else {
+                const answer = Number((totalC / totalX).toFixed(4)); // Округляем до 4 знаков, убирая лишние нули
+                stepsHtml += `<div class="step"><b>3. Делим правую часть на коэффициент при x:</b><br> x = ${totalC} / ${totalX}</div>`;
+                stepsHtml += `<div class="final-answer">Ответ: x = ${answer}</div>`;
+            }
+
+            resultDiv.innerHTML = stepsHtml;
+
+        } catch (e) {
+            showError('Произошла ошибка при вычислении. Проверьте формат ввода.');
+        }
+    }
+
+    function showError(msg) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.className = 'result-box error';
+        resultDiv.innerHTML = `<b>${msg}</b>`;
+    }
+</script>
+
+</body>
+</html>
