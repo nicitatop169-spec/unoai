@@ -1,150 +1,290 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ГДЗ: Супер-Решатель</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-  body {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed, #db2777); padding: 16px;
-  }
-  .card {
-    background: #fff; width: 100%; max-width: 560px; border-radius: 28px;
-    padding: 32px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); text-align: center;
-  }
-  .title {
-    font-size: 28px; font-weight: 900; color: #e11d48; margin-bottom: 6px;
-  }
-  .sub { font-size: 14px; color: #64748b; margin-bottom: 20px; }
-  .row { display: flex; gap: 10px; margin-bottom: 12px; }
-  input {
-    flex: 1; padding: 14px 16px; font-size: 18px; font-weight: 700;
-    border: 2px solid #e2e8f0; border-radius: 14px; outline: none;
-  }
-  input:focus { border-color: #6366f1; }
-  .btn {
-    padding: 14px 22px; font-size: 16px; font-weight: 800; color: #fff;
-    background: linear-gradient(135deg, #ff4d6d, #ff7b54); border: none;
-    border-radius: 14px; cursor: pointer;
-  }
-  .tools { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-  .tbtn {
-    background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 12px;
-    border-radius: 8px; font-weight: 700; cursor: pointer;
-  }
-  .chips { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; font-size: 13px; }
-  .chip {
-    background: #eef2ff; color: #4f46e5; border: none; padding: 6px 12px;
-    border-radius: 99px; font-weight: 700; cursor: pointer;
-  }
-  .res {
-    display: none; margin-top: 20px; text-align: left; background: #f8fafc;
-    border: 2px solid #e2e8f0; border-radius: 18px; padding: 16px;
-  }
-  .step { margin-bottom: 10px; font-size: 14px; color: #1e293b; line-height: 1.4; }
-  .ans {
-    margin-top: 12px; padding: 12px 14px; background: #dcfce7;
-    border-left: 4px solid #16a34a; border-radius: 10px;
-    font-size: 18px; font-weight: 800; color: #166534;
-  }
-  .err {
-    padding: 12px; background: #fee2e2; color: #991b1b;
-    border-radius: 10px; font-weight: 700; font-size: 14px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГДЗ: Супер-Решатель</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #4b0082, #8a2be2);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .card {
+            background-color: #fcfcfc;
+            border-radius: 20px;
+            padding: 30px;
+            width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        .header h1 {
+            color: #d9534f;
+            font-size: 24px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #d9534f;
+        }
+        .btn-solve {
+            background-color: #e07a72;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-solve:hover {
+            background-color: #d9534f;
+        }
+        .symbols {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 16px;
+        }
+        .symbols span {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .symbols span:hover {
+            background: #eee;
+        }
+        .reset {
+            color: #e07a72;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+        .examples {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+        .examples span {
+            cursor: pointer;
+        }
+        .examples span:hover {
+            color: #333;
+        }
+        .result-box {
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .result-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        .result-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+    </style>
 </head>
 <body>
+
 <div class="card">
-  <h1 class="title">🧩 ГДЗ: Супер-Решатель</h1>
-  <p class="sub">Введи линейное или квадратное уравнение</p>
-  <div class="row">
-    <input type="text" id="eq" value="2x + 5 = 15" placeholder="2x + 5 = 15">
-    <button class="btn" onclick="run()">Решить 🚀</button>
-  </div>
-  <div class="tools">
-    <button class="tbtn" onclick="ins('x^2')">x²</button>
-    <button class="tbtn" onclick="ins('x')">x</button>
-    <button class="tbtn" onclick="ins(' + ')">+</button>
-    <button class="tbtn" onclick="ins(' - ')">−</button>
-    <button class="tbtn" onclick="ins(' = ')">=</button>
-    <button class="tbtn" onclick="clr()" style="margin-left:auto;color:#dc2626">Сброс</button>
-  </div>
-  <div class="chips">
-    <button class="chip" onclick="ex('3x - 7 = 14')">3x - 7 = 14</button>
-    <button class="chip" onclick="ex('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</button>
-    <button class="chip" onclick="ex('x^2 - 5x + 6 = 0')">x² - 5x + 6 = 0</button>
-  </div>
-  <div class="res" id="out"></div>
-</div>
-<script>
-  const eq = document.getElementById('eq');
-  const out = document.getElementById('out');
-  eq.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
-  function ins(v) { eq.value += v; eq.focus(); }
-  function clr() { eq.value = ''; out.style.display = 'none'; eq.focus(); }
-  function ex(v) { eq.value = v; run(); }
-  function fmt(n) { return Math.abs(n) < 1e-9 ? 0 : Number(n.toFixed(4)); }
+    <div class="header">
+        <h1>✤ ГДЗ: Супер-Решатель</h1>
+    </div>
+    <div class="subtitle">Введи линейное или квадратное уравнение</div>
 
-  function parse(s) {
-    s = s.split(' ').join('').replace(/х/gi, 'x').replace(/X/g, 'x').replace(/x²/g, 'x^2').replace(/,/g, '.');
-    if (!s) throw new Error('Пустая часть уравнения');
-    if (s.charAt(0) !== '+' && s.charAt(0) !== '-') s = '+' + s;
-    let terms = [], cur = s.charAt(0);
-    for (let i = 1; i < s.length; i++) {
-      let c = s.charAt(i);
-      if (c === '+' || c === '-') { terms.push(cur); cur = c; }
-      else { cur += c; }
-    }
-    terms.push(cur);
-    let a = 0, b = 0, c = 0;
-    for (let t of terms) {
-      if (t.endsWith('x^2')) {
-        let k = t.slice(0, -3);
-        a += (k === '+' ? 1 : (k === '-' ? -1 : parseFloat(k)));
-      } else if (t.endsWith('x')) {
-        let k = t.slice(0, -1);
-        b += (k === '+' ? 1 : (k === '-' ? -1 : parseFloat(k)));
-      } else {
-        c += parseFloat(t);
-      }
-      if (isNaN(a) || isNaN(b) || isNaN(c)) throw new Error('Ошибка в записи: ' + t);
-    }
-    return { a: a, b: b, c: c };
-  }
-
-  function run() {
-    out.style.display = 'block';
-    try {
-      let p = eq.value.split('=');
-      if (p.length !== 2) throw new Error('Нужен ровно один знак "="');
-      let L = parse(p), R = parse(p);
-      let a = fmt(L.a - R.a), b = fmt(L.b - R.b), c = fmt(L.c - R.c);
-      if (a !== 0) {
-        let D = fmt(b * b - 4 * a * c);
-        let h = '<div class="step"><b>1. Вид:</b> ' + a + 'x² + (' + b + ')x + (' + c + ') = 0</div>' +
-                '<div class="step"><b>2. Дискриминант:</b> D = ' + D + '</div>';
-        if (D < 0) h += '<div class="ans">Ответ: корней нет</div>';
-        else if (D === 0) h += '<div class="ans">Ответ: x = ' + fmt(-b / (2 * a)) + '</div>';
-        else {
-          let x1 = fmt((-b - Math.sqrt(D)) / (2 * a));
-          let x2 = fmt((-b + Math.sqrt(D)) / (2 * a));
-          h += '<div class="ans">Ответ: x₁ = ' + x1 + '; x₂ = ' + x2 + '</div>';
+    <div class="input-group">
+        <input type="text" id="equationInput" placeholder="Например: 2x + 5 = 15" value="2x + 5 = 15">
+        if (coefStr === '' || coefStr === '+') a += 1;
+                    else if (coefStr === '-') a -= 1;
+                    else a += parseFloat(coefStr);
+                } else {
+                    b += parseFloat(term);
+                }
+            }
+            return { a, b };
         }
-        out.innerHTML = h;
-      } else {
-        let rc = fmt(-c);
-        let h = '<div class="step"><b>1. Перенос:</b> ' + b + 'x = ' + rc + '</div>';
-        if (b === 0 && rc === 0) h += '<div class="ans">Ответ: x — любое число</div>';
-        else if (b === 0) h += '<div class="ans">Ответ: корней нет</div>';
-        else h += '<div class="ans">Ответ: x = ' + fmt(rc / b) + '</div>';
-        out.innerHTML = h;
-      }
-    } catch (e) {
-      out.innerHTML = '<div class="err">⚠️ ' + e.message + '</div>';
+
+        let left = parseSide(leftSide);
+        let right = parseSide(rightSide);
+
+        let finalA = left.a - right.a;
+        let finalB = right.b - left.b;
+
+        if (finalA === 0) {
+            if (finalB === 0) return "Бесконечное множество решений";
+            else return null;
+        }
+
+        let x = finalB / finalA;
+        return Math.round(x * 10000) / 10000;
     }
-  }
 </script>
+
 </body>
 </html>
+     <button class="btn-solve" onclick="solveEquation()">Решить 🚀</button>
+    </div>
+
+    <div class="symbols">
+        <span onclick="insertSymbol('^2')">x²</span>
+        <span onclick="insertSymbol('x')">x</span>
+        <span onclick="insertSymbol('+')">+</span>
+        <span onclick="insertSymbol('-')">-</span>
+        <span onclick="insertSymbol('=')">=</span>
+        <div class="reset" onclick="resetInput()">Сброс</div>
+    </div>
+
+    <div class="examples">
+        <span onclick="setExample('3x - 7 = 14')">3x - 7 = 14</span>
+        <span onclick="setExample('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</span>
+        <span onclick="setExample('x^2 - 5x - 6 = 0')">x² - 5x - 6 = 0</span>
+    </div>
+
+    <div id="resultBox" class="result-box"></div>
+</div>
+
+<script>
+    function insertSymbol(symbol) {
+        const input = document.getElementById('equationInput');
+        input.value += symbol;
+        input.focus();
+    }
+
+    function setExample(text) {
+        document.getElementById('equationInput').value = text;
+        document.getElementById('resultBox').style.display = 'none';
+    }
+
+    function resetInput() {
+        document.getElementById('equationInput').value = '';
+        document.getElementById('resultBox').style.display = 'none';
+        document.getElementById('equationInput').focus();
+    }
+
+    function solveEquation() {
+        const inputElement = document.getElementById('equationInput');
+        let equationStr = inputElement.value;
+        
+        if (!equationStr || equationStr.trim() === '') {
+            showError("Пожалуйста, введите уравнение.");
+            return;
+        }
+
+        equationStr = equationStr.replace(/\s+/g, '').toLowerCase();
+
+        if (!equationStr.includes('=')) {
+            showError("В уравнении должен быть знак '='.");
+            return;
+        }
+
+        try {
+            let solution = solveLinear(equationStr);
+            
+            if (solution !== null && solution !== undefined) {
+                if (typeof solution === 'string') {
+                    showSuccess(solution);
+                } else {
+                    showSuccess(`Корень уравнения: <b>x = ${solution}</b>`);
+                }
+            } else {
+                if (equationStr.includes('x^2') || equationStr.includes('x²')) {
+                    showError("Квадратные уравнения требуют более сложной логики. В этой версии решаются только линейные уравнения.");
+                } else {
+                    showError("Не удалось распознать уравнение. Попробуйте формат 'ax + b = c'.");
+                }
+            }
+        } catch (e) {
+            showError("Ошибка при обработке уравнения. Проверьте ввод.");
+            console.error(e);
+        }
+    }
+
+    function showError(message) {
+        const resultBox = document.getElementById('resultBox');
+        resultBox.className = 'result-box result-error';
+        resultBox.innerHTML = `⚠️ ${message}`;
+        resultBox.style.display = 'block';
+    }
+
+    function showSuccess(message) {
+        const resultBox = document.getElementById('resultBox');
+        resultBox.className = 'result-box result-success';
+        resultBox.innerHTML = `✅ ${message}`;
+        resultBox.style.display = 'block';
+    }
+
+    function solveLinear(eq) {
+        eq = eq.replace('x²', 'x^2');
+        let parts = eq.split('=');
+        if (parts.length !== 2) return null;
+
+        let leftSide = parts[0];
+        let rightSide = parts[1];
+
+        function parseSide(side) {
+            let a = 0;
+            let b = 0;
+
+            if (!side.startsWith('+') && !side.startsWith('-')) {
+                side = '+' + side;
+            }
+
+            const terms = side.match(/[+-]?\d*\.?\d*x?/g);
+            if (!terms) return {a: 0, b: 0};
+
+            for (let term of terms) {
+                if (term === '' || term === '+') continue;
+
+                if (term.includes('x')) {
+                    let coefStr = term.replace('x', '');
