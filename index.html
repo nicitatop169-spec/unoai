@@ -1,4 +1,112 @@
-<!DOCTYPE html>
+<div class="examples">
+        <span class="ex" data-eq="3x - 7 = 14">3x - 7 = 14</span>
+        <span class="ex" data-eq="5x + 2 = 3x + 10">5x + 2 = 3x + 10</span>
+        <span class="ex" data-eq="x^2 - 5x - 6 = 0">x² - 5x - 6 = 0</span>
+    </div>
+
+    <div id="resultBox" class="result-box"></div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        var input = document.getElementById('eqInput');
+        var resultBox = document.getElementById('resultBox');
+        var solveBtn = document.getElementById('solveBtn');
+        var resetBtn = document.getElementById('resetBtn');
+
+        function showError(msg) {
+            resultBox.className = 'result-box result-error';
+            resultBox.innerHTML = '⚠️ ' + msg;
+            resultBox.style.display = 'block';
+        }
+
+        function showSuccess(msg) {
+            resultBox.className = 'result-box result-success';
+            resultBox.innerHTML = '✅ ' + msg;
+            resultBox.style.display = 'block';
+        }
+
+        function insertText(text) {
+            if (typeof input.value !== 'string') input.value = '';
+            input.value += text;
+            input.focus();
+        }
+
+        document.getElementById('symX2').onclick = function() { insertText('^2'); };
+        document.getElementById('symX').onclick = function() { insertText('x'); };
+        document.getElementById('symPlus').onclick = function() { insertText('+'); };
+        document.getElementById('symMinus').onclick = function() { insertText('-'); };
+        document.getElementById('symEq').onclick = function() { insertText('='); };
+
+        resetBtn.onclick = function() {
+            input.value = '';
+            resultBox.style.display = 'none';
+            input.focus();
+        };
+
+        var examples = document.querySelectorAll('.ex');
+        for (var i = 0; i < examples.length; i++) {
+            examples[i].onclick = function() {
+                input.value = this.getAttribute('data-eq');
+                resultBox.style.display = 'none';
+            };
+        }
+
+        solveBtn.onclick = function() {
+            if (typeof input.value !== 'string') {
+                showError("Ошибка ввода данных.");
+                return;
+            }
+
+            var raw = input.value.trim();
+            if (raw === '') {
+                showError("Пожалуйста, введите уравнение.");
+                return;
+            }
+
+            var eq = raw.replace(/\s+/g, '').toLowerCase().replace(/²/g, '^2');
+
+            if (eq.indexOf('=') === -1) {
+                showError("В уравнении должен быть знак '='.");
+                return;
+            }
+
+            try {
+                var isQuadratic = eq.indexOf('x^2') !== -1;
+                
+                if (isQuadratic) {
+                    var res = solveQuadratic(eq);
+                    if (res.error) {
+                        showError(res.error);
+                    } else {
+                        showSuccess(res.text);
+                    }
+                } else {
+                    var x = solveLinear(eq);
+                    if (x === null) {
+                        showError("Не удалось распознать уравнение или нет решения.");
+                    } else if (typeof x === 'string') {
+                        showSuccess(x);
+                    } else {
+                        showSuccess("Корень уравнения: <b>x = " + x + "</b>");
+                    }
+                }
+            } catch (err) {
+                showError("Ошибка при обработке уравнения.");
+            }
+        };
+
+        function solveLinear(eq) {
+            var parts = eq.split('=');
+            if (parts.length !== 2) return null;
+
+            function parseSide(side) {
+                var a = 0, b = 0;
+                if (side[0] !== '+' && side[0] !== '-') side = '+' + side;
+                var terms = side.match(/[+-]?\d*\.?\d*x?/g);
+                if (!terms) return {a: 0, b: 0};
+                for (var i = 0; i < terms.length; i++) {
+                    <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +119,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             color: #333;
         }
@@ -19,109 +127,90 @@
             background-color: #fcfcfc;
             border-radius: 20px;
             padding: 30px;
-            width: 500px;
+            width: 100%;
+            max-width: 500px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 5px;
+            box-sizing: border-box;
         }
         .header h1 {
             color: #d9534f;
-            font-size: 24px;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 22px;
+            margin: 0 0 5px 0;
+            text-align: center;
         }
         .subtitle {
             text-align: center;
             color: #888;
-            font-size: 14px;
-            margin-bottom: 30px;
+            font-size: 13px;
+            margin-bottom: 25px;
         }
         .input-group {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         input[type="text"] {
             flex-grow: 1;
-            padding: 15px;
-            font-size: 18px;
+            padding: 12px;
+            font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 10px;
             outline: none;
-            transition: border-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
         }
-        input[type="text"]:focus {
-            border-color: #d9534f;
-        }
+        input[type="text"]:focus { border-color: #d9534f; }
         .btn-solve {
             background-color: #e07a72;
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 0 25px;
-            font-size: 18px;
+            padding: 0 20px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            white-space: nowrap;
         }
-        .btn-solve:hover {
-            background-color: #d9534f;
-        }
+        .btn-solve:hover { background-color: #d9534f; }
         .symbols {
             display: flex;
             gap: 15px;
             margin-bottom: 20px;
-            color: #555;
             font-size: 16px;
+            align-items: center;
         }
         .symbols span {
             cursor: pointer;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 5px;
-            transition: background 0.2s;
         }
-        .symbols span:hover {
-            background: #eee;
-        }
+        .symbols span:hover { background: #eee; }
         .reset {
             color: #e07a72;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: underline;
             margin-left: auto;
-            display: flex;
-            align-items: center;
         }
         .examples {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             color: #777;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 5px;
         }
-        .examples span {
-            cursor: pointer;
-        }
-        .examples span:hover {
-            color: #333;
-        }
+        .examples span { cursor: pointer; }
+        .examples span:hover { color: #333; }
         .result-box {
             padding: 15px;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
             display: none;
+            line-height: 1.4;
         }
         .result-success {
             background-color: #e8f5e9;
@@ -144,147 +233,15 @@
     <div class="subtitle">Введи линейное или квадратное уравнение</div>
 
     <div class="input-group">
-        <input type="text" id="equationInput" placeholder="Например: 2x + 5 = 15" value="2x + 5 = 15">
-        if (coefStr === '' || coefStr === '+') a += 1;
-                    else if (coefStr === '-') a -= 1;
-                    else a += parseFloat(coefStr);
-                } else {
-                    b += parseFloat(term);
-                }
-            }
-            return { a, b };
-        }
-
-        let left = parseSide(leftSide);
-        let right = parseSide(rightSide);
-
-        let finalA = left.a - right.a;
-        let finalB = right.b - left.b;
-
-        if (finalA === 0) {
-            if (finalB === 0) return "Бесконечное множество решений";
-            else return null;
-        }
-
-        let x = finalB / finalA;
-        return Math.round(x * 10000) / 10000;
-    }
-</script>
-
-</body>
-</html>
-     <button class="btn-solve" onclick="solveEquation()">Решить 🚀</button>
+        <input type="text" id="eqInput" placeholder="Пример: 2x + 5 = 15" value="x^2 - 5x - 6 = 0">
+        <button class="btn-solve" id="solveBtn">Решить</button>
     </div>
 
     <div class="symbols">
-        <span onclick="insertSymbol('^2')">x²</span>
-        <span onclick="insertSymbol('x')">x</span>
-        <span onclick="insertSymbol('+')">+</span>
-        <span onclick="insertSymbol('-')">-</span>
-        <span onclick="insertSymbol('=')">=</span>
-        <div class="reset" onclick="resetInput()">Сброс</div>
+        <span id="symX2">x²</span>
+        <span id="symX">x</span>
+        <span id="symPlus">+</span>
+        <span id="symMinus">-</span>
+        <span id="symEq">=</span>
+        <div class="reset" id="resetBtn">Сброс</div>
     </div>
-
-    <div class="examples">
-        <span onclick="setExample('3x - 7 = 14')">3x - 7 = 14</span>
-        <span onclick="setExample('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</span>
-        <span onclick="setExample('x^2 - 5x - 6 = 0')">x² - 5x - 6 = 0</span>
-    </div>
-
-    <div id="resultBox" class="result-box"></div>
-</div>
-
-<script>
-    function insertSymbol(symbol) {
-        const input = document.getElementById('equationInput');
-        input.value += symbol;
-        input.focus();
-    }
-
-    function setExample(text) {
-        document.getElementById('equationInput').value = text;
-        document.getElementById('resultBox').style.display = 'none';
-    }
-
-    function resetInput() {
-        document.getElementById('equationInput').value = '';
-        document.getElementById('resultBox').style.display = 'none';
-        document.getElementById('equationInput').focus();
-    }
-
-    function solveEquation() {
-        const inputElement = document.getElementById('equationInput');
-        let equationStr = inputElement.value;
-        
-        if (!equationStr || equationStr.trim() === '') {
-            showError("Пожалуйста, введите уравнение.");
-            return;
-        }
-
-        equationStr = equationStr.replace(/\s+/g, '').toLowerCase();
-
-        if (!equationStr.includes('=')) {
-            showError("В уравнении должен быть знак '='.");
-            return;
-        }
-
-        try {
-            let solution = solveLinear(equationStr);
-            
-            if (solution !== null && solution !== undefined) {
-                if (typeof solution === 'string') {
-                    showSuccess(solution);
-                } else {
-                    showSuccess(`Корень уравнения: <b>x = ${solution}</b>`);
-                }
-            } else {
-                if (equationStr.includes('x^2') || equationStr.includes('x²')) {
-                    showError("Квадратные уравнения требуют более сложной логики. В этой версии решаются только линейные уравнения.");
-                } else {
-                    showError("Не удалось распознать уравнение. Попробуйте формат 'ax + b = c'.");
-                }
-            }
-        } catch (e) {
-            showError("Ошибка при обработке уравнения. Проверьте ввод.");
-            console.error(e);
-        }
-    }
-
-    function showError(message) {
-        const resultBox = document.getElementById('resultBox');
-        resultBox.className = 'result-box result-error';
-        resultBox.innerHTML = `⚠️ ${message}`;
-        resultBox.style.display = 'block';
-    }
-
-    function showSuccess(message) {
-        const resultBox = document.getElementById('resultBox');
-        resultBox.className = 'result-box result-success';
-        resultBox.innerHTML = `✅ ${message}`;
-        resultBox.style.display = 'block';
-    }
-
-    function solveLinear(eq) {
-        eq = eq.replace('x²', 'x^2');
-        let parts = eq.split('=');
-        if (parts.length !== 2) return null;
-
-        let leftSide = parts[0];
-        let rightSide = parts[1];
-
-        function parseSide(side) {
-            let a = 0;
-            let b = 0;
-
-            if (!side.startsWith('+') && !side.startsWith('-')) {
-                side = '+' + side;
-            }
-
-            const terms = side.match(/[+-]?\d*\.?\d*x?/g);
-            if (!terms) return {a: 0, b: 0};
-
-            for (let term of terms) {
-                if (term === '' || term === '+') continue;
-
-                if (term.includes('x')) {
-                    let coefStr = term.replace('x', '');
