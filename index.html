@@ -1,298 +1,150 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ГДЗ: Супер-Решатель</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #6b7be8 0%, #9b6cc2 55%, #c56ca8 100%);
-      padding: 20px;
-    }
-
-    .card {
-      background: #ffffff;
-      width: 100%;
-      max-width: 560px;
-      border-radius: 28px;
-      padding: 36px 32px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-      text-align: center;
-    }
-
-    .title {
-      font-size: 28px;
-      font-weight: 800;
-      color: #e64965;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
-
-    .subtitle b {
-      color: #374151;
-    }
-
-    .input-group {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      padding: 14px 18px;
-      font-size: 18px;
-      font-weight: 600;
-      color: #1f2937;
-      border: 2px solid #e5e7eb;
-      border-radius: 14px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input[type="text"]:focus {
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
-    }
-
-    .btn-solve {
-      padding: 14px 24px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #ffffff;
-      background: linear-gradient(90deg, #ff516b 0%, #ff7b54 100%);
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 8px 20px rgba(255, 81, 107, 0.35);
-      transition: transform 0.15s, box-shadow 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn-solve:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(255, 81, 107, 0.45);
-    }
-
-    .btn-solve:active {
-      transform: translateY(0);
-    }
-
-    .examples {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .chip {
-      background: #eef2ff;
-      color: #4f46e5;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-    }
-
-    .chip:hover {
-      background: #e0e7ff;
-      transform: scale(1.04);
-    }
-
-    .result-box {
-      display: none;
-      margin-top: 24px;
-      text-align: left;
-      background: #f9fafb;
-      border: 2px solid #f3f4f6;
-      border-radius: 18px;
-      padding: 20px;
-      animation: fadeIn 0.25s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .step {
-      margin-bottom: 12px;
-      font-size: 15px;
-      color: #374151;
-      line-height: 1.5;
-    }
-
-    .step-badge {
-      display: inline-block;
-      background: #e0e7ff;
-      color: #4338ca;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-right: 6px;
-    }
-
-    .final-answer {
-      margin-top: 14px;
-      padding: 12px 16px;
-      background: #ecfdf5;
-      border-left: 4px solid #10b981;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: 800;
-      color: #065f46;
-    }
-
-    .error {
-      background: #fef2f2;
-      border-left: 4px solid #ef4444;
-      color: #991b1b;
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-      @media (max-width: 480px) {
-      .input-group { flex-direction: column; }
-      .btn-solve { justify-content: center; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГДЗ: Супер-Решатель</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+  body {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed, #db2777); padding: 16px;
+  }
+  .card {
+    background: #fff; width: 100%; max-width: 560px; border-radius: 28px;
+    padding: 32px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); text-align: center;
+  }
+  .title {
+    font-size: 28px; font-weight: 900; color: #e11d48; margin-bottom: 6px;
+  }
+  .sub { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+  .row { display: flex; gap: 10px; margin-bottom: 12px; }
+  input {
+    flex: 1; padding: 14px 16px; font-size: 18px; font-weight: 700;
+    border: 2px solid #e2e8f0; border-radius: 14px; outline: none;
+  }
+  input:focus { border-color: #6366f1; }
+  .btn {
+    padding: 14px 22px; font-size: 16px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, #ff4d6d, #ff7b54); border: none;
+    border-radius: 14px; cursor: pointer;
+  }
+  .tools { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tbtn {
+    background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 12px;
+    border-radius: 8px; font-weight: 700; cursor: pointer;
+  }
+  .chips { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; font-size: 13px; }
+  .chip {
+    background: #eef2ff; color: #4f46e5; border: none; padding: 6px 12px;
+    border-radius: 99px; font-weight: 700; cursor: pointer;
+  }
+  .res {
+    display: none; margin-top: 20px; text-align: left; background: #f8fafc;
+    border: 2px solid #e2e8f0; border-radius: 18px; padding: 16px;
+  }
+  .step { margin-bottom: 10px; font-size: 14px; color: #1e293b; line-height: 1.4; }
+  .ans {
+    margin-top: 12px; padding: 12px 14px; background: #dcfce7;
+    border-left: 4px solid #16a34a; border-radius: 10px;
+    font-size: 18px; font-weight: 800; color: #166534;
+  }
+  .err {
+    padding: 12px; background: #fee2e2; color: #991b1b;
+    border-radius: 10px; font-weight: 700; font-size: 14px;
+  }
+</style>
 </head>
 <body>
-
-  <div class="card">
-    <div class="title">🧩 ГДЗ: Супер-Решатель</div>
-    <p class="subtitle">Введи уравнение с переменной <b>x</b> и получи яркий разбор</p>
-
-    <div class="input-group">
-      <input type="text" id="eqInput" value="2x + 5 = 15" placeholder="Например: 2x + 5 = 15" />
-      <button class="btn-solve" onclick="solveEquation()">Решить 🚀</button>
-    </div>
-
-    <div class="examples">
-      <span>Примеры:</span>
-      <button class="chip" onclick="setExample('3x - 7 = 14')">3x - 7 = 14</button>
-      <button class="chip" onclick="setExample('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</button>
-      <button class="chip" onclick="setExample('-2x + 8 = 0')">-2x + 8 = 0</button>
-    </div>
-
-    <div class="result-box" id="resultBox"></div>
+<div class="card">
+  <h1 class="title">🧩 ГДЗ: Супер-Решатель</h1>
+  <p class="sub">Введи линейное или квадратное уравнение</p>
+  <div class="row">
+    <input type="text" id="eq" value="2x + 5 = 15" placeholder="2x + 5 = 15">
+    <button class="btn" onclick="run()">Решить 🚀</button>
   </div>
+  <div class="tools">
+    <button class="tbtn" onclick="ins('x^2')">x²</button>
+    <button class="tbtn" onclick="ins('x')">x</button>
+    <button class="tbtn" onclick="ins(' + ')">+</button>
+    <button class="tbtn" onclick="ins(' - ')">−</button>
+    <button class="tbtn" onclick="ins(' = ')">=</button>
+    <button class="tbtn" onclick="clr()" style="margin-left:auto;color:#dc2626">Сброс</button>
+  </div>
+  <div class="chips">
+    <button class="chip" onclick="ex('3x - 7 = 14')">3x - 7 = 14</button>
+    <button class="chip" onclick="ex('5x + 2 = 3x + 10')">5x + 2 = 3x + 10</button>
+    <button class="chip" onclick="ex('x^2 - 5x + 6 = 0')">x² - 5x + 6 = 0</button>
+  </div>
+  <div class="res" id="out"></div>
+</div>
+<script>
+  const eq = document.getElementById('eq');
+  const out = document.getElementById('out');
+  eq.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+  function ins(v) { eq.value += v; eq.focus(); }
+  function clr() { eq.value = ''; out.style.display = 'none'; eq.focus(); }
+  function ex(v) { eq.value = v; run(); }
+  function fmt(n) { return Math.abs(n) < 1e-9 ? 0 : Number(n.toFixed(4)); }
 
-  <script>
-    const input = document.getElementById('eqInput');
-    const resultBox = document.getElementById('resultBox');
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') solveEquation();
-    });
-
-    function setExample(eq) {
-      input.value = eq;
-      solveEquation();
+  function parse(s) {
+    s = s.split(' ').join('').replace(/х/gi, 'x').replace(/X/g, 'x').replace(/x²/g, 'x^2').replace(/,/g, '.');
+    if (!s) throw new Error('Пустая часть уравнения');
+    if (s.charAt(0) !== '+' && s.charAt(0) !== '-') s = '+' + s;
+    let terms = [], cur = s.charAt(0);
+    for (let i = 1; i < s.length; i++) {
+      let c = s.charAt(i);
+      if (c === '+' || c === '-') { terms.push(cur); cur = c; }
+      else { cur += c; }
     }
-
-    function parseSide(expr) {
-      // Убираем пробелы, заменяем кириллическую 'х' и заглавную 'X' на 'x', запятые на точки
-      let clean = expr
-        .replace(/\s+/g, '')
-        .replace(/[хХX]/g, 'x')
-        .replace(/,/g, '.');
-
-      if (!clean) throw new Error('Пустая часть уравнения');
-
-      // Разбиваем на слагаемые по знакам + и -
-      const terms = clean.match(/[+-]?[^+-]+/g);
-      if (!terms) throw new Error('Не удалось разобрать выражение');
-
-      let a = 0; // коэффициент при x
-      let b = 0; // свободный член
-
-      for (let term of terms) {
-        if (term.includes('x')) {
-          if (!/^[+-]?\d*(\.\d+)?x$/.test(term)) {
-            throw new Error(`Неподдерживаемый элемент: "${term}"`);
-          }
-          let coeff = term.replace('x', '');
-          if (coeff === '' || coeff === '+') a += 1;
-          else if (coeff === '-') a -= 1;
-          else a += parseFloat(coeff);
-        } else {
-          if (!/^[+-]?\d+(\.\d+)?$/.test(term)) {
-            throw new Error(`Некорректное число: "${term}"`);
-          }
-          b += parseFloat(term);
-        }
+    terms.push(cur);
+    let a = 0, b = 0, c = 0;
+    for (let t of terms) {
+      if (t.endsWith('x^2')) {
+        let k = t.slice(0, -3);
+        a += (k === '+' ? 1 : (k === '-' ? -1 : parseFloat(k)));
+      } else if (t.endsWith('x')) {
+        let k = t.slice(0, -1);
+        b += (k === '+' ? 1 : (k === '-' ? -1 : parseFloat(k)));
+      } else {
+        c += parseFloat(t);
       }
-      return { a, b };
+      if (isNaN(a) || isNaN(b) || isNaN(c)) throw new Error('Ошибка в записи: ' + t);
     }
+    return { a: a, b: b, c: c };
+  }
 
-    function formatNum(n) {
-      return Number.isInteger(n) ? n : parseFloat(n.toFixed(4));
-    }
-
-    function solveEquation() {
-      const raw = input.value.trim();
-      resultBox.style.display = 'block';
-
-      try {
-        const parts = raw.split('=');
-        if (parts.length !== 2) {
-          throw new Error('В уравнении должен быть ровно один знак "="');
+  function run() {
+    out.style.display = 'block';
+    try {
+      let p = eq.value.split('=');
+      if (p.length !== 2) throw new Error('Нужен ровно один знак "="');
+      let L = parse(p), R = parse(p);
+      let a = fmt(L.a - R.a), b = fmt(L.b - R.b), c = fmt(L.c - R.c);
+      if (a !== 0) {
+        let D = fmt(b * b - 4 * a * c);
+        let h = '<div class="step"><b>1. Вид:</b> ' + a + 'x² + (' + b + ')x + (' + c + ') = 0</div>' +
+                '<div class="step"><b>2. Дискриминант:</b> D = ' + D + '</div>';
+        if (D < 0) h += '<div class="ans">Ответ: корней нет</div>';
+        else if (D === 0) h += '<div class="ans">Ответ: x = ' + fmt(-b / (2 * a)) + '</div>';
+        else {
+          let x1 = fmt((-b - Math.sqrt(D)) / (2 * a));
+          let x2 = fmt((-b + Math.sqrt(D)) / (2 * a));
+          h += '<div class="ans">Ответ: x₁ = ' + x1 + '; x₂ = ' + x2 + '</div>';
         }
-
-        const left = parseSide(parts[0]);
-        const right = parseSide(parts[1]);
-
-        const totalA = formatNum(left.a - right.a);
-        const totalB = formatNum(right.b - left.b);
-
-        let stepsHTML = `
-          <div class="step">
-            <span class="step-badge">Шаг 1</span>
-            Приводим подобные слагаемые в обеих частях:
-            <b>${formatNum(left.a)}x ${left.b >= 0 ? '+ ' + formatNum(left.b) : '- ' + Math.abs(formatNum(left.b))} = ${formatNum(right.a)}x ${right.b >= 0 ? '+ ' + formatNum(right.b) : '- ' + Math.abs(formatNum(right.b))}</b>
-          </div>
-          <div class="step">
-            <span class="step-badge">Шаг 2</span>
-            Переносим всё с <b>x</b> влево, а числа — вправо (меняя знаки на противоположные):
-            <b>${formatNum(left.a)}x ${right.a >= 0 ? '- ' + formatNum(right.a) : '+ ' + Math.abs(formatNum(right.a))}x = ${formatNum(right.b)} ${left.b >= 0 ? '- ' + formatNum(left.b) : '+ ' + Math.abs(formatNum(left.b))}</b>
-          </div>
-          <div class="step">
-            <span class="step-badge">Шаг 3</span>
-            Упрощаем: <b>${totalA}x = ${totalB}</b>
-          </div>
-        `;
-
-        if (totalA === 0 && totalB === 0) {
+        out.innerHTML = h;
+      } else {
+        let rc = fmt(-c);
+        let h = '<div class="step"><b>1. Перенос:</b> ' + b + 'x = ' + rc + '</div>';
+        if (b === 0 && rc === 0) h += '<div class="ans">Ответ: x — любое число</div>';
+        else if (b === 0) h += '<div class="ans">Ответ: корней нет</div>';
+        else h += '<div class="ans">Ответ: x = ' + fmt(rc / b) + '</div>';
+        out.innerHTML = h;
+      }
+    } catch (e) {
+      out.innerHTML = '<div class="err">⚠️ ' + e.message + '</div>';
+    }
+  }
+</script>
+</body>
+</html>
