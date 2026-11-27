@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#667eea">
-<title>Решатель уравнений</title>
+<title>Решатель уравнений + Калькулятор</title>
 <style>
   :root {
     --bg-grad-1: #667eea;
@@ -159,7 +159,7 @@
     padding: 3px;
     gap: 2px;
   }
-  .theme-btn, .custom-btn {
+  .theme-btn, .custom-btn, .calc-btn {
     border: none;
     background: transparent;
     border-radius: 999px;
@@ -170,11 +170,11 @@
     transition: 0.25s;
     line-height: 1;
   }
-  .theme-btn.active, .custom-btn.active {
+  .theme-btn.active, .custom-btn.active, .calc-btn.active {
     background: var(--accent);
     box-shadow: var(--glow);
   }
-  .custom-btn { background: var(--key-bg); }
+  .custom-btn, .calc-btn { background: var(--key-bg); }
 
   .panel {
     display: none;
@@ -371,6 +371,109 @@
     font-size: 12px;
     color: var(--text-soft);
   }
+
+  /* ==================== КАЛЬКУЛЯТОР ==================== */
+  .calc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 12, 41, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 14px;
+  }
+  .calc-overlay.open { display: flex; }
+
+  .calc-box {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 400px;
+    padding: 16px;
+    animation: appear 0.3s ease both;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  .calc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .calc-head span { font-weight: 700; color: var(--accent-dark); font-size: 16px; }
+  .calc-close {
+    border: none;
+    background: var(--key-del-bg);
+    color: var(--key-del-text);
+    border-radius: 999px;
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .calc-display {
+    width: 100%;
+    padding: 14px 12px;
+    border: 2px solid var(--input-border);
+    border-radius: 12px;
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 20px;
+    font-family: 'Consolas', monospace;
+    text-align: right;
+    outline: none;
+  }
+  .calc-display:focus { border-color: var(--accent); }
+
+  .calc-prev {
+    text-align: right;
+    color: var(--text-soft);
+    font-size: 13px;
+    min-height: 18px;
+    margin: 6px 2px 0;
+    font-family: 'Consolas', monospace;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .ckey {
+    border: none;
+    border-radius: 10px;
+    padding: 11px 0;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Consolas', monospace;
+    cursor: pointer;
+    transition: 0.15s;
+    user-select: none;
+    background: var(--key-bg);
+    color: var(--accent-dark);
+  }
+  .ckey:active { background: var(--key-bg-active); color: white; transform: scale(0.94); }
+  .ckey.op { background: var(--key-fn-bg); color: var(--key-fn-text); }
+  .ckey.eq {
+    background: linear-gradient(135deg, var(--btn-grad-1, #667eea), var(--btn-grad-2, #764ba2));
+    color: white;
+    grid-column: span 2;
+  }
+  .ckey.clr { background: var(--key-del-bg); color: var(--key-del-text); }
+  .ckey.wide2 { grid-column: span 2; }
 </style>
 </head>
 <body>
@@ -381,6 +484,7 @@
     <div class="top-bar">
       <h1>🧮 Решатель уравнений</h1>
       <div class="top-controls">
+        <button class="calc-btn" id="calcBtn" title="Калькулятор">🖩</button>
         <button class="custom-btn" id="customBtn" title="Настроить цвета">🎨</button>
         <div class="theme-switch" id="themes">
           <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
@@ -430,7 +534,7 @@
       <button class="key" data-ins="0">0</button>
       <button class="key" data-ins=".">,</button>
       <button class="key" data-ins="+">+</button>
-      <button class="key fn" data-ins="√(">√</button>
+      <button class="key fn" data-ins="sqrt(">√</button>
       <button class="key fn" data-ins="sin(">sin</button>
       <button class="key fn" data-ins="cos(">cos</button>
       <button class="key fn" data-ins="tan(">tg</button>
@@ -459,6 +563,66 @@
     <div class="footer">Сайт создали: giver | uno</div>
   </div>
 
+  <!-- ==================== КАЛЬКУЛЯТОР ==================== -->
+  <div class="calc-overlay" id="calcOverlay">
+    <div class="calc-box">
+      <div class="calc-head">
+        <span>🖩 Калькулятор</span>
+        <button class="calc-close" id="calcClose">✕</button>
+      </div>
+      <input type="text" class="calc-display" id="calcDisplay" placeholder="0">
+      <div class="calc-prev" id="calcPrev"></div>
+      <div class="calc-grid">
+        <button class="ckey clr" data-cins="C">C</button>
+        <button class="ckey" data-cins="(">(</button>
+        <button class="ckey" data-cins=")">)</button>
+        <button class="ckey" data-cins="%">%</button>
+        <button class="ckey op" data-cdel="1">⌫</button>
+
+        <button class="ckey op" data-cins="sin(">sin</button>
+        <button class="ckey op" data-cins="cos(">cos</button>
+        <button class="ckey op" data-cins="tan(">tan</button>
+        <button class="ckey op" data-cins="pi">π</button>
+        <button class="ckey op" data-cins="^">x^y</button>
+
+        <button class="ckey op" data-cins="asin(">sin⁻¹</button>
+        <button class="ckey op" data-cins="acos(">cos⁻¹</button>
+        <button class="ckey op" data-cins="atan(">tan⁻¹</button>
+        <button class="ckey op" data-cins="e">e</button>
+        <button class="ckey op" data-cins="!">n!</button>
+
+        <button class="ckey op" data-cins="sqrt(">√</button>
+        <button class="ckey op" data-cins="^2">x²</button>
+        <button class="ckey op" data-cins="ln(">ln</button>
+        <button class="ckey op" data-cins="log(">log</button>
+        <button class="ckey op" data-cins="exp(">e^x</button>
+
+        <button class="ckey" data-cins="7">7</button>
+        <button class="ckey" data-cins="8">8</button>
+        <button class="ckey" data-cins="9">9</button>
+        <button class="ckey op" data-cins="/">÷</button>
+        <button class="ckey op" data-cins="abs(">|a|</button>
+
+        <button class="ckey" data-cins="4">4</button>
+        <button class="ckey" data-cins="5">5</button>
+        <button class="ckey" data-cins="6">6</button>
+        <button class="ckey op" data-cins="*">×</button>
+        <button class="ckey op" data-cins="x">Ans</button>
+
+        <button class="ckey" data-cins="1">1</button>
+        <button class="ckey" data-cins="2">2</button>
+        <button class="ckey" data-cins="3">3</button>
+        <button class="ckey op" data-cins="-">−</button>
+        <button class="ckey op" data-cins="sinh(">sh</button>
+
+        <button class="ckey" data-cins="0">0</button>
+        <button class="ckey" data-cins=".">,</button>
+        <button class="ckey op" data-cins="+">+</button>
+        <button class="ckey eq" data-ceq="1">=</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 // ==================== ПАРСЕР ====================
 function tokenize(s) {
@@ -478,7 +642,7 @@ function tokenize(s) {
       while (j < s.length && /[a-zA-Z]/.test(s[j])) j++;
       tokens.push({ t: 'id', v: s.slice(i, j).toLowerCase() });
       i = j;
-    } else if ('+-*/^()='.includes(c)) {
+    } else if ('+-*/^()=!%'.includes(c)) {
       tokens.push({ t: c });
       i++;
     } else {
@@ -488,8 +652,17 @@ function tokenize(s) {
   return tokens;
 }
 
-const FUNCS = ['sin', 'cos', 'tan', 'tg', 'sqrt', 'ln', 'log', 'abs', 'exp'];
+const FUNCS = ['sin', 'cos', 'tan', 'tg', 'sqrt', 'ln', 'log', 'abs', 'exp',
+               'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh'];
 const CONSTS = { pi: Math.PI, e: Math.E };
+
+function factorial(n) {
+  if (n < 0 || !Number.isInteger(n)) throw new Error('факториал только для целых неотрицательных чисел');
+  if (n > 170) return Infinity;
+  let r = 1;
+  for (let i = 2; i <= n; i++) r *= i;
+  return r;
+}
 
 function parse(tokens) {
   let pos = 0;
@@ -523,7 +696,18 @@ function parse(tokens) {
   function parseUnary() {
     if (peek() && peek().t === '-') { next(); return { t: 'op', op: '-', l: { t: 'num', v: 0 }, r: parseUnary() }; }
     if (peek() && peek().t === '+') { next(); return parseUnary(); }
-    return parsePower();
+    return parsePostfix(parsePower());
+  }
+
+  // постфиксные операции: факториал ! и процент %
+  function parsePostfix(node) {
+    for (;;) {
+      const p = peek();
+      if (p && p.t === '!') { next(); node = { t: 'fn', name: 'fact', arg: node }; continue; }
+      if (p && p.t === '%') { next(); node = { t: 'op', op: '/', l: node, r: { t: 'num', v: 100 } }; continue; }
+      break;
+    }
+    return node;
   }
 
   function parsePower() {
@@ -551,7 +735,7 @@ function parse(tokens) {
         else arg = parsePower();
         return { t: 'fn', name: p.v === 'tg' ? 'tan' : p.v, arg };
       }
-      throw new Error('неизвестное имя: «' + p.v + '» (переменная — только x)');
+      throw new Error('неизвестное имя: «' + p.v + '»');
     }
     throw new Error('неожиданный символ в выражении');
   }
@@ -581,11 +765,18 @@ function evalNode(node, x) {
         case 'sin': return Math.sin(a);
         case 'cos': return Math.cos(a);
         case 'tan': return Math.tan(a);
+        case 'asin': return Math.asin(a);
+        case 'acos': return Math.acos(a);
+        case 'atan': return Math.atan(a);
+        case 'sinh': return Math.sinh(a);
+        case 'cosh': return Math.cosh(a);
+        case 'tanh': return Math.tanh(a);
         case 'sqrt': return a < 0 ? NaN : Math.sqrt(a);
         case 'ln': return a <= 0 ? NaN : Math.log(a);
         case 'log': return a <= 0 ? NaN : Math.log10(a);
         case 'abs': return Math.abs(a);
         case 'exp': return Math.exp(a);
+        case 'fact': return factorial(a);
       }
     }
   }
@@ -822,7 +1013,6 @@ const themesBox = document.getElementById('themes');
 const customBtn = document.getElementById('customBtn');
 const panel = document.getElementById('panel');
 
-// 10 фонов: [цвет1, цвет2, название]
 const PRESETS_BG = [
   ['#667eea', '#764ba2', 'Сирень'],
   ['#f5576c', '#f093fb', 'Закат'],
@@ -836,7 +1026,6 @@ const PRESETS_BG = [
   ['#41295a', '#2F0743', 'Ночь']
 ];
 
-// 10 кнопок: [цвет1, цвет2, название]
 const PRESETS_BTN = [
   ['#667eea', '#764ba2', 'Сирень'],
   ['#f5576c', '#f093fb', 'Роза'],
@@ -873,7 +1062,6 @@ function makeSwatches(boxId, presets, storageKey, cssVar1, cssVar2) {
     };
     box.appendChild(sw);
   });
-  // применяем сохранённый выбор сразу при загрузке
   if (savedIdx !== null && presets[savedIdx]) {
     document.documentElement.style.setProperty(cssVar1, presets[savedIdx][0]);
     document.documentElement.style.setProperty(cssVar2, presets[savedIdx][1]);
@@ -886,7 +1074,6 @@ makeSwatches('swBtn', PRESETS_BTN, 'solver-btn', '--btn-grad-1', '--btn-grad-2')
 document.getElementById('resetColors').onclick = () => {
   localStorage.removeItem('solver-bg');
   localStorage.removeItem('solver-btn');
-  // возвращаем цвета текущей темы
   document.documentElement.style.removeProperty('--bg-grad-1');
   document.documentElement.style.removeProperty('--bg-grad-2');
   document.documentElement.style.removeProperty('--btn-grad-1');
@@ -895,7 +1082,6 @@ document.getElementById('resetColors').onclick = () => {
   scheduleChartRedraw();
 };
 
-// при загрузке: тема
 let currentTheme = localStorage.getItem('solver-theme') || 'light';
 document.documentElement.setAttribute('data-theme', currentTheme);
 themesBox.querySelectorAll('.theme-btn').forEach(b =>
@@ -908,10 +1094,89 @@ themesBox.querySelectorAll('.theme-btn').forEach(b => {
     localStorage.setItem('solver-theme', currentTheme);
     themesBox.querySelectorAll('.theme-btn').forEach(x =>
       x.classList.toggle('active', x.dataset.theme === currentTheme));
-    // стандартная тема сбрасывает свои фон и кнопку
     document.getElementById('resetColors').onclick();
   });
 });
+
+// ==================== КАЛЬКУЛЯТОР ====================
+const calcBtn = document.getElementById('calcBtn');
+const calcOverlay = document.getElementById('calcOverlay');
+const calcClose = document.getElementById('calcClose');
+const calcDisplay = document.getElementById('calcDisplay');
+const calcPrev = document.getElementById('calcPrev');
+
+let lastAns = 0; // Ans — последний ответ
+
+calcBtn.addEventListener('click', () => {
+  calcOverlay.classList.add('open');
+  calcBtn.classList.add('active');
+  calcDisplay.focus();
+});
+
+function closeCalc() {
+  calcOverlay.classList.remove('open');
+  calcBtn.classList.remove('active');
+}
+calcClose.addEventListener('click', closeCalc);
+calcOverlay.addEventListener('click', e => { if (e.target === calcOverlay) closeCalc(); });
+
+// вставка в дисплей калькулятора
+document.querySelectorAll('.ckey[data-cins]').forEach(k => {
+  k.addEventListener('click', () => {
+    const text = k.dataset.cins;
+    const start = calcDisplay.selectionStart ?? calcDisplay.value.length;
+    const end = calcDisplay.selectionEnd ?? calcDisplay.value.length;
+    calcDisplay.value = calcDisplay.value.slice(0, start) + text + calcDisplay.value.slice(end);
+    calcDisplay.focus();
+    calcDisplay.setSelectionRange(start + text.length, start + text.length);
+  });
+});
+
+document.querySelector('.ckey[data-cdel]').addEventListener('click', () => {
+  const start = calcDisplay.selectionStart ?? calcDisplay.value.length;
+  const end = calcDisplay.selectionEnd ?? calcDisplay.value.length;
+  if (start === end && start > 0) {
+    calcDisplay.value = calcDisplay.value.slice(0, start - 1) + calcDisplay.value.slice(end);
+    calcDisplay.focus();
+    calcDisplay.setSelectionRange(start - 1, start - 1);
+  } else if (start !== end) {
+    calcDisplay.value = calcDisplay.value.slice(0, start) + calcDisplay.value.slice(end);
+    calcDisplay.focus();
+    calcDisplay.setSelectionRange(start, start);
+  }
+});
+
+document.querySelector('.ckey[data-cins="C"]').addEventListener('click', () => {
+  calcDisplay.value = '';
+  calcPrev.textContent = '';
+  calcDisplay.focus();
+});
+
+function calcCompute() {
+  const raw = calcDisplay.value.trim();
+  if (!raw) return;
+  try {
+    // в калькуляторе x означает Ans (последний ответ)
+    const node = parse(tokenize(raw));
+    const val = evalNode(node, lastAns);
+    if (!isFinite(val) && !isNaN(val)) throw new Error('слишком большое число');
+    if (isNaN(val)) throw new Error('не определено');
+    calcPrev.textContent = raw + ' =';
+    calcDisplay.value = fmt(calcPretty(val));
+    lastAns = val;
+  } catch (e) {
+    calcPrev.textContent = 'Ошибка: ' + e.message;
+  }
+}
+
+// красивый вывод: длинные дроби округляем, целые показываем как есть
+function calcPretty(v) {
+  if (Number.isInteger(v)) return v;
+  return +v.toFixed(10);
+}
+
+document.querySelector('.ckey[data-ceq]').addEventListener('click', calcCompute);
+calcDisplay.addEventListener('keydown', e => { if (e.key === 'Enter') calcCompute(); });
 
 // ==================== ГРАФИК ====================
 let gridCol = '#eeeafc', axisCol = '#c8c4e8', curveCol = '#667eea', rootCol = '#e17055';
