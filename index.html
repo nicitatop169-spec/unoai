@@ -26,120 +26,60 @@
     padding: 36px;
   }
 
-  h1 {
-    text-align: center;
-    color: #4a3f8f;
-    font-size: 26px;
-    margin-bottom: 6px;
-  }
+  h1 { text-align: center; color: #4a3f8f; font-size: 26px; margin-bottom: 6px; }
+  .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 22px; }
 
-  .subtitle {
-    text-align: center;
-    color: #888;
-    font-size: 14px;
-    margin-bottom: 24px;
-  }
+  .input-row { display: flex; gap: 10px; }
 
-  .type-select {
-    width: 100%;
-    padding: 12px;
+  #eq {
+    flex: 1;
+    padding: 14px 16px;
     border: 2px solid #e0ddef;
-    border-radius: 10px;
-    font-size: 15px;
-    color: #4a3f8f;
-    font-weight: 600;
-    background: #f8f7ff;
-    outline: none;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
-
-  .type-select:focus { border-color: #667eea; }
-
-  .inputs {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-  }
-
-  .coef {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .coef label {
-    font-weight: 700;
-    color: #4a3f8f;
+    border-radius: 12px;
     font-size: 17px;
-  }
-
-  .coef input {
-    width: 85px;
-    padding: 10px;
-    border: 2px solid #e0ddef;
-    border-radius: 10px;
-    font-size: 16px;
-    text-align: center;
+    font-family: 'Consolas', monospace;
     outline: none;
     transition: 0.2s;
   }
-
-  .coef input:focus { border-color: #667eea; }
-
-  .eq-preview {
-    text-align: center;
-    color: #667eea;
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 14px;
-    min-height: 22px;
-  }
-
-  .system-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-  }
-
-  .system-row .bracket {
-    font-size: 26px;
-    color: #667eea;
-    font-weight: 300;
-  }
-
-  .mini {
-    width: 70px;
-    padding: 8px;
-    border: 2px solid #e0ddef;
-    border-radius: 8px;
-    font-size: 15px;
-    text-align: center;
-    outline: none;
-  }
-
-  .mini:focus { border-color: #667eea; }
+  #eq:focus { border-color: #667eea; }
 
   button.solve {
-    width: 100%;
-    padding: 14px;
+    padding: 14px 22px;
     border: none;
     border-radius: 12px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
+    white-space: nowrap;
   }
-
   button.solve:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
+  .ex {
+    background: #f0eefc;
+    color: #667eea;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: 'Consolas', monospace;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .ex:hover { background: #667eea; color: white; }
+
+  .error {
+    color: #d63031;
+    margin-top: 14px;
+    display: none;
+    font-size: 14px;
+    background: #fdecea;
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
 
   .result {
     margin-top: 22px;
@@ -147,19 +87,19 @@
     border-radius: 12px;
     padding: 18px;
     display: none;
-    line-height: 1.6;
+    line-height: 1.7;
     color: #333;
     font-size: 15px;
   }
-
+  .result .steps div { margin: 4px 0; }
   .result .answer {
-    margin-top: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #d5d0f0;
     font-size: 18px;
     font-weight: 700;
     color: #4a3f8f;
   }
-
-  .error { color: #d63031; margin-top: 12px; display: none; font-size: 14px; }
 
   canvas {
     margin-top: 18px;
@@ -175,470 +115,446 @@
 <body>
   <div class="card">
     <h1>🧮 Решатель уравнений</h1>
-    <p class="subtitle">Линейные, квадратные, биквадратные, кубические и системы</p>
+    <p class="subtitle">Просто напишите уравнение — сайт сам его разберёт и решит</p>
 
-    <select class="type-select" id="type">
-      <option value="lin">Линейное: ax + b = 0</option>
-      <option value="quad" selected>Квадратное: ax² + bx + c = 0</option>
-      <option value="biquad">Биквадратное: ax⁴ + bx² + c = 0</option>
-      <option value="cubic">Кубическое: ax³ + bx² + cx + d = 0</option>
-      <option value="sys">Система: a₁x + b₁y = c₁; a₂x + b₂y = c₂</option>
-    </select>
-
-    <!-- Линейное -->
-    <div class="inputs" id="in-lin">
-      <div class="coef"><label for="la">a</label><input type="number" id="la" step="any" value="2"></div>
-      <div class="coef"><label for="lb">b</label><input type="number" id="lb" step="any" value="-8"></div>
+    <div class="input-row">
+      <input type="text" id="eq" placeholder="например: x^2 - 5x + 6 = 0" autocomplete="off">
+      <button class="solve" id="btn">Решить</button>
     </div>
 
-    <!-- Квадратное -->
-    <div class="inputs" id="in-quad">
-      <div class="coef"><label for="qa">a</label><input type="number" id="qa" step="any" value="1"></div>
-      <div class="coef"><label for="qb">b</label><input type="number" id="qb" step="any" value="-3"></div>
-      <div class="coef"><label for="qc">c</label><input type="number" id="qc" step="any" value="2"></div>
+    <div class="examples">
+      <button class="ex">x^2 - 5x + 6 = 0</button>
+      <button class="ex">2x + 3 = 5</button>
+      <button class="ex">x^3 - 6x^2 + 11x - 6 = 0</button>
+      <button class="ex">x^4 - 5x^2 + 4 = 0</button>
+      <button class="ex">(x+1)(x-3) = 0</button>
+      <button class="ex">2(x - 4) = 3x + 1</button>
+      <button class="ex">x/2 + 1 = x/3 - 2</button>
+      <button class="ex">sin(x) = 0.5</button>
+      <button class="ex">2^x = 16</button>
+      <button class="ex">x^2 = 2x + 8</button>
     </div>
 
-    <!-- Биквадратное -->
-    <div class="inputs" id="in-biquad">
-      <div class="coef"><label for="ba">a</label><input type="number" id="ba" step="any" value="1"></div>
-      <div class="coef"><label for="bb">b</label><input type="number" id="bb" step="any" value="-5"></div>
-      <div class="coef"><label for="bc">c</label><input type="number" id="bc" step="any" value="4"></div>
-    </div>
-
-    <!-- Кубическое -->
-    <div class="inputs" id="in-cubic">
-      <div class="coef"><label for="ca">a</label><input type="number" id="ca" step="any" value="1"></div>
-      <div class="coef"><label for="cb">b</label><input type="number" id="cb" step="any" value="-6"></div>
-      <div class="coef"><label for="cc">c</label><input type="number" id="cc" step="any" value="11"></div>
-      <div class="coef"><label for="cd">d</label><input type="number" id="cd" step="any" value="-6"></div>
-    </div>
-
-    <!-- Система -->
-    <div class="hidden" id="in-sys">
-      <div class="system-row">
-        <span class="bracket">{</span>
-        <input type="number" class="mini" id="s1a" step="any" value="2">
-        <span style="font-weight:700;color:#4a3f8f">x +</span>
-        <input type="number" class="mini" id="s1b" step="any" value="3">
-        <span style="font-weight:700;color:#4a3f8f">y =</span>
-        <input type="number" class="mini" id="s1c" step="any" value="13">
-      </div>
-      <div class="system-row">
-        <span class="bracket" style="visibility:hidden">{</span>
-        <input type="number" class="mini" id="s2a" step="any" value="1">
-        <span style="font-weight:700;color:#4a3f8f">x +</span>
-        <input type="number" class="mini" id="s2b" step="any" value="-1">
-        <span style="font-weight:700;color:#4a3f8f">y =</span>
-        <input type="number" class="mini" id="s2c" step="any" value="1">
-      </div>
-    </div>
-
-    <div class="eq-preview" id="preview"></div>
-
-    <button class="solve" id="btn">Решить</button>
-
-    <div class="error" id="err">Введите числа во все поля!</div>
-
+    <div class="error" id="err"></div>
     <div class="result" id="result"></div>
-    <canvas id="chart" width="540" height="320"></canvas>
+    <canvas id="chart" width="540" height="300"></canvas>
   </div>
 
 <script>
-  const typeSelect = document.getElementById('type');
-  const btn = document.getElementById('btn');
-  const result = document.getElementById('result');
-  const err = document.getElementById('err');
-  const chart = document.getElementById('chart');
-  const ctx = chart.getContext('2d');
-  const preview = document.getElementById('preview');
+// ==================== ПАРСЕР ВЫРАЖЕНИЙ ====================
+// Узлы: {t:'num', v} {t:'x'} {t:'op', op, l, r} {t:'fn', name, arg}
 
-  const inputsMap = {
-    lin:   ['in-lin'],
-    quad:  ['in-quad'],
-    biquad:['in-biquad'],
-    cubic: ['in-cubic'],
-    sys:   ['in-sys']
-  };
-
-  function fmt(x) {
-    if (Number.isInteger(x)) return x.toString();
-    return +x.toFixed(6) + '';
-  }
-
-  // показываем нужные поля
-  typeSelect.onchange = () => {
-    Object.entries(inputsMap).forEach(([k, ids]) => {
-      document.getElementById(k === 'sys' ? 'in-sys' : 'in-' + k)
-        .classList.toggle('hidden', k !== typeSelect.value);
-    });
-    result.style.display = 'none';
-    chart.style.display = 'none';
-    err.style.display = 'none';
-  };
-
-  // живой предпросмотр уравнения
-  document.querySelectorAll('input').forEach(i => i.addEventListener('input', updatePreview));
-
-  function signTerm(v, first) {
-    const s = v < 0 ? '− ' : (first ? '' : '+ ');
-    return s + fmt(Math.abs(v));
-  }
-
-  function updatePreview() {
-    const t = typeSelect.value;
-    const v = id => parseFloat(document.getElementById(id).value) || 0;
-    if (t === 'lin') preview.textContent = `${signTerm(v('la'), true)}x ${signTerm(v('lb'))} = 0`;
-    if (t === 'quad') preview.textContent = `${signTerm(v('qa'), true)}x² ${signTerm(v('qb'))}x ${signTerm(v('qc'))} = 0`;
-    if (t === 'biquad') preview.textContent = `${signTerm(v('ba'), true)}x⁴ ${signTerm(v('bb'))}x² ${signTerm(v('bc'))} = 0`;
-    if (t === 'cubic') preview.textContent = `${signTerm(v('ca'), true)}x³ ${signTerm(v('cb'))}x² ${signTerm(v('cc'))}x ${signTerm(v('cd'))} = 0`;
-    if (t === 'sys') preview.textContent = '';
-  }
-  updatePreview();
-
-  btn.onclick = () => {
-    err.style.display = 'none';
-    result.style.display = 'none';
-    chart.style.display = 'none';
-    const t = typeSelect.value;
-    const val = id => {
-      const n = parseFloat(document.getElementById(id).value);
-      if (isNaN(n)) { err.style.display = 'block'; return null; }
-      return n;
-    };
-    if (t === 'lin') solveLin(val('la'), val('lb'));
-    if (t === 'quad') solveQuad(val('qa'), val('qb'), val('qc'));
-    if (t === 'biquad') solveBiQuad(val('ba'), val('bb'), val('bc'));
-    if (t === 'cubic') solveCubic(val('ca'), val('cb'), val('cc'), val('cd'));
-    if (t === 'sys') solveSystem(val('s1a'), val('s1b'), val('s1c'), val('s2a'), val('s2b'), val('s2c'));
-  };
-
-  function show(html) {
-    result.innerHTML = html;
-    result.style.display = 'block';
-  }
-
-  function solveLin(a, b) {
-    if (a === 0) {
-      show(b === 0
-        ? '<div class="answer">Бесконечно много решений (0 = 0)</div>'
-        : '<div class="answer">Решений нет</div>');
-      return;
-    }
-    const x = -b / a;
-    show(`<div><strong>Шаг:</strong> x = −b / a = ${fmt(-b)} / ${fmt(a)}</div>
-          <div class="answer">x = ${fmt(x)}</div>`);
-    drawFunction(a => 0, [{ a: a, b: b }], [], 1);
-  }
-
-  function solveQuad(a, b, c) {
-    if (a === 0) return solveLin(b, c);
-    const D = b * b - 4 * a * c;
-    let html = `<div><strong>Дискриминант:</strong> D = b² − 4ac = ${fmt(b*b)} − ${fmt(4*a*c)} = <strong>${fmt(D)}</strong></div>`;
-    if (D > 0) {
-      const x1 = (-b + Math.sqrt(D)) / (2 * a), x2 = (-b - Math.sqrt(D)) / (2 * a);
-      html += `<div>D &gt; 0 — два корня</div>
-               <div class="answer">x₁ = ${fmt(x1)}, x₂ = ${fmt(x2)}</div>`;
-    } else if (D === 0) {
-      const x = -b / (2 * a);
-      html += `<div>D = 0 — один корень</div>
-               <div class="answer">x = ${fmt(x)}</div>`;
+function tokenize(s) {
+  s = s.replace(/√/g, 'sqrt').replace(/·|×/g, '*').replace(/,/g, '.');
+  const tokens = [];
+  let i = 0;
+  while (i < s.length) {
+    const c = s[i];
+    if (c === ' ') { i++; continue; }
+    if (/[0-9.]/.test(c)) {
+      let j = i;
+      while (j < s.length && /[0-9.]/.test(s[j])) j++;
+      tokens.push({ t: 'num', v: parseFloat(s.slice(i, j)) });
+      i = j;
+    } else if (/[a-zA-Z]/.test(c)) {
+      let j = i;
+      while (j < s.length && /[a-zA-Z]/.test(s[j])) j++;
+      tokens.push({ t: 'id', v: s.slice(i, j).toLowerCase() });
+      i = j;
+    } else if ('+-*/^()='.includes(c)) {
+      tokens.push({ t: c });
+      i++;
     } else {
-      const re = -b / (2 * a), im = Math.sqrt(-D) / (2 * a);
-      html += `<div>D &lt; 0 — действительных корней нет</div>
-               <div class="answer">x = ${fmt(re)} ± ${fmt(Math.abs(im))}i</div>`;
+      throw new Error('непонятный символ: «' + c + '»');
     }
-    show(html);
-    drawFunction(null, [{a:a, b:b, c:c}], [], 2);
+  }
+  return tokens;
+}
+
+const FUNCS = ['sin', 'cos', 'tan', 'tg', 'sqrt', 'ln', 'log', 'abs', 'exp'];
+const CONSTS = { pi: Math.PI, e: Math.E };
+
+function parse(tokens) {
+  let pos = 0;
+  const peek = () => tokens[pos];
+  const next = () => tokens[pos++];
+
+  function parseExpr() {
+    let node = parseTerm();
+    while (peek() && (peek().t === '+' || peek().t === '-')) {
+      const op = next().t;
+      node = { t: 'op', op, l: node, r: parseTerm() };
+    }
+    return node;
   }
 
-  function solveBiQuad(a, b, c) {
-    if (a === 0) return solveQuad(b, c);
-    const D = b * b - 4 * a * c;
-    let html = `<div>Замена: <strong>t = x²</strong>, тогда at² + bt + c = 0</div>
-                <div><strong>Дискриминант:</strong> D = ${fmt(b*b)} − ${fmt(4*a*c)} = <strong>${fmt(D)}</strong></div>`;
-    let roots = [];
-    if (D < 0) {
-      html += `<div>D &lt; 0 — t² не может быть отрицательным корней нет... вернее, корней у уравнения нет</div>
-               <div class="answer">Действительных корней нет</div>`;
-      show(html);
-      drawFunction(null, [{a:a, b:0, c:b, d:c}], [], 4);
-      return;
-    }
-    const t1 = (-b + Math.sqrt(D)) / (2 * a);
-    const t2 = (-b - Math.sqrt(D)) / (2 * a);
-    [t1, t2].forEach(t => {
-      if (t > 0) {
-        const r = Math.sqrt(t);
-        roots.push(r, -r);
-        html += `<div>t = ${fmt(t)} &gt; 0 → x = ±√${fmt(t)} = ±${fmt(r)}</div>`;
-      } else if (t === 0) {
-        roots.push(0);
-        html += `<div>t = 0 → x = 0</div>`;
-      } else {
-        html += `<div>t = ${fmt(t)} &lt; 0 — корней не даёт (x² не может быть отрицательным)</div>`;
+  function parseTerm() {
+    let node = parseUnary();
+    for (;;) {
+      const p = peek();
+      // неявное умножение: 2x, 3(x+1), x sin(x)
+      if (p && (p.t === 'id' || p.t === 'num' || p.t === '(') &&
+          node.t !== 'op') {
+        node = { t: 'op', op: '*', l: node, r: parseUnary() };
+        continue;
       }
-    });
-    roots = [...new Set(roots.map(r => +r.toFixed(10)))];
-    html += `<div class="answer">Ответ: ${roots.length ? 'x = ' + roots.map(fmt).join(', ') : 'корней нет'}</div>`;
-    show(html);
-    drawFunction(null, [{a:a, b:0, c:b, d:c}], roots, 4);
+      if (p && p.t === '*') { next(); node = { t: 'op', op: '*', l: node, r: parseUnary() }; continue; }
+      if (p && p.t === '/') { next(); node = { t: 'op', op: '/', l: node, r: parseUnary() }; continue; }
+      break;
+    }
+    return node;
   }
 
-  function solveCubic(a, b, c, d) {
-    if (a === 0) return solveQuad(b, c, d);
-    let html = `<div>Ищем рациональные корни среди делителей свободного члена (метод подбора)</div>`;
-    const roots = [];
-    // подбираем целые корни
-    const cand = [];
-    const absD = Math.abs(d) || 1;
-    for (let i = 1; i <= absD; i++) {
-      if (absD % i === 0) cand.push(i, -i);
+  function parseUnary() {
+    if (peek() && peek().t === '-') { next(); return { t: 'op', op: '-', l: { t: 'num', v: 0 }, r: parseUnary() }; }
+    if (peek() && peek().t === '+') { next(); return parseUnary(); }
+    return parsePower();
+  }
+
+  function parsePower() {
+    const base = parsePrimary();
+    if (peek() && peek().t === '^') {
+      next();
+      return { t: 'op', op: '^', l: base, r: parseUnary() };
     }
-    let rest = [a, b, c, d];
-    let k = 0;
-    for (const r of cand) {
-      if (k >= 2) break;
-      if (Math.abs(polyVal(rest, 3, r)) < 1e-9) {
-        roots.push(r);
-        rest = divideByRoot(rest, r);
-        html += `<div>Целый корень: x = ${fmt(r)} → делим на (x ${r < 0 ? '+' : '−'} ${fmt(Math.abs(r))})</div>`;
-        k++;
+    return base;
+  }
+
+  function parsePrimary() {
+    const p = next();
+    if (!p) throw new Error('выражение обрывается');
+    if (p.t === 'num') return { t: 'num', v: p.v };
+    if (p.t === '(') {
+      const inner = parseExpr();
+      if (!peek() || peek().t !== ')') throw new Error('не закрыта скобка');
+      next();
+      return inner;
+    }
+    if (p.t === 'id') {
+      if (p.v === 'x') return { t: 'x' };
+      if (CONSTS[p.v] !== undefined) return { t: 'num', v: CONSTS[p.v] };
+      if (FUNCS.includes(p.v)) {
+        let arg;
+        if (peek() && peek().t === '(') { next(); arg = parseExpr(); if (!peek() || peek().t !== ')') throw new Error('не закрыта скобка'); next(); }
+        else arg = parsePower();
+        return { t: 'fn', name: p.v === 'tg' ? 'tan' : p.v, arg };
+      }
+      throw new Error('неизвестное имя: «' + p.v + '» (переменная — только x)');
+    }
+    throw new Error('неожиданный символ в выражении');
+  }
+
+  const node = parseExpr();
+  if (pos < tokens.length) throw new Error('лишние символы в конце');
+  return node;
+}
+
+function evalNode(node, x) {
+  switch (node.t) {
+    case 'num': return node.v;
+    case 'x': return x;
+    case 'op': {
+      const a = evalNode(node.l, x), b = evalNode(node.r, x);
+      switch (node.op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return a / b;
+        case '^': return Math.pow(a, b);
       }
     }
-    if (k === 0) {
-      // численный поиск всех корней
-      const found = numericRoots(rest, 3);
-      html += `<div>Рациональных корней нет — находим численно</div>`;
-      html += `<div class="answer">Ответ: x ≈ ${found.map(x => x.toFixed(3)).join(', ')}</div>`;
-      show(html);
-      drawFunction(null, [{a:a, b:b, c:c, d:d}], found, 3);
-      return;
-    }
-    // осталась квадратичная или линейная
-    if (rest.length === 3) { // ax² + bx + c после деления (rest = [q2, q1, q0]... но мы храним по-другому)
-    }
-    // rest хранится как массив коэффициентов, длина 4-k
-    if (rest.length - 0 === 3) {}
-    const m = rest.length; // 4 - k
-    if (m === 3) {
-      const A = rest[0], B = rest[1], C = rest[2];
-      const D2 = B*B - 4*A*C;
-      html += `<div>Осталось квадратное: ${fmt(A)}x² + ${fmt(B)}x + ${fmt(C)} = 0, D = ${fmt(D2)}</div>`;
-      if (D2 > 0) {
-        roots.push((-B + Math.sqrt(D2)) / (2*A), (-B - Math.sqrt(D2)) / (2*A));
-      } else if (D2 === 0) {
-        roots.push(-B / (2*A));
-      } else {
-        const re = -B/(2*A), im = Math.sqrt(-D2)/(2*A);
-        html += `<div>Остальные корни комплексные: ${fmt(re)} ± ${fmt(Math.abs(im))}i</div>`;
+    case 'fn': {
+      const a = evalNode(node.arg, x);
+      switch (node.name) {
+        case 'sin': return Math.sin(a);
+        case 'cos': return Math.cos(a);
+        case 'tan': return Math.tan(a);
+        case 'sqrt': return a < 0 ? NaN : Math.sqrt(a);
+        case 'ln': return a <= 0 ? NaN : Math.log(a);
+        case 'log': return a <= 0 ? NaN : Math.log10(a);
+        case 'abs': return Math.abs(a);
+        case 'exp': return Math.exp(a);
       }
-    } else if (m === 2) {
-      roots.push(-rest[1] / rest[0]);
     }
-    const uniq = [...new Set(roots.map(r => +r.toFixed(10)))];
-    html += `<div class="answer">Ответ: x = ${uniq.map(fmt).join(', ')}</div>`;
-    show(html);
-    drawFunction(null, [{a:a, b:b, c:c, d:d}], uniq, 3);
   }
+}
 
-  function polyVal(coeffs, deg, x) {
-    let s = 0;
-    for (let i = 0; i < coeffs.length; i++) s = s * x + coeffs[i];
-    return s;
-  }
+function hasX(node) {
+  if (node.t === 'x') return true;
+  if (node.t === 'op') return hasX(node.l) || hasX(node.r);
+  if (node.t === 'fn') return hasX(node.arg);
+  return false;
+}
 
-  // деление полинома на (x - r): coeffs от старшей степени
-  function divideByRoot(coeffs, r) {
-    const n = coeffs.length;
-    const out = [coeffs[0]];
-    for (let i = 1; i < n - 1; i++) out.push(coeffs[i] + out[i-1] * r);
-    return out;
-  }
+// ==================== ПОЛИНОМЫ ====================
+// возвращает массив коэффициентов по возрастанию степени или null
 
-  function numericRoots(coeffs, deg) {
-    const f = x => polyVal(coeffs, deg, x);
-    const found = [];
-    const R = Math.max(50, Math.abs(coeffs[coeffs.length-1]) + 10);
-    let prev = f(-R);
-    for (let x = -R + 0.01; x <= R; x += 0.01) {
-      const cur = f(x);
-      if (prev * cur < 0 || Math.abs(cur) < 1e-9) {
-        // уточняем бисекцией
-        let lo = x - 0.01, hi = x;
-        for (let i = 0; i < 60; i++) {
-          const mid = (lo + hi) / 2;
-          if (f(lo) * f(mid) <= 0) hi = mid; else lo = mid;
-        }
-        const root = +(((lo + hi) / 2).toFixed(8));
-        if (!found.some(r => Math.abs(r - root) < 1e-4)) found.push(root);
+function toPoly(node, maxDeg) {
+  if (node.t === 'num') return [node.v];
+  if (node.t === 'x') return [0, 1];
+  if (node.t === 'fn') return null;
+  if (node.t === 'op') {
+    const L = toPoly(node.l, maxDeg), R = toPoly(node.r, maxDeg);
+    if (!L || !R) return null;
+    if (node.op === '+' || node.op === '-') {
+      const out = new Array(Math.max(L.length, R.length)).fill(0);
+      for (let i = 0; i < L.length; i++) out[i] += L[i];
+      for (let i = 0; i < R.length; i++) out[i] += (node.op === '+' ? R[i] : -R[i]);
+      return out.length > maxDeg + 1 ? null : out;
+    }
+    if (node.op === '*') {
+      const out = new Array(L.length + R.length - 1).fill(0);
+      for (let i = 0; i < L.length; i++)
+        for (let j = 0; j < R.length; j++) out[i + j] += L[i] * R[j];
+      return out.length > maxDeg + 1 ? null : out;
+    }
+    if (node.op === '^') {
+      if (node.r.t !== 'num' || !Number.isInteger(node.r.v) || node.r.v < 0 || node.r.v > maxDeg) return null;
+      let out = [1];
+      for (let k = 0; k < node.r.v; k++) {
+        const tmp = new Array(out.length + L.length - 1).fill(0);
+        for (let i = 0; i < out.length; i++)
+          for (let j = 0; j < L.length; j++) tmp[i + j] += out[i] * L[j];
+        out = tmp;
       }
-      prev = cur;
+      return out.length > maxDeg + 1 ? null : out;
     }
-    return found;
   }
+  return null;
+}
 
-  function solveSystem(a1, b1, c1, a2, b2, c2) {
-    const det = a1 * b2 - a2 * b1;
-    if (det === 0) {
-      const same = (a1 * c2 === a2 * c1) && (b1 * c2 === b2 * c1);
-      show(same
-        ? '<div class="answer">Система имеет бесконечно много решений (прямые совпадают)</div>'
-        : '<div class="answer">Система не имеет решений (прямые параллельны)</div>');
-      // график прямых всё равно покажем
-      drawSystem(a1, b1, c1, a2, b2, c2, null, null);
-      return;
-    }
-    const x = (c1 * b2 - c2 * b1) / det;
-    const y = (a1 * c2 - a2 * c1) / det;
-    show(`<div><strong>Метод Крамера:</strong> Δ = a₁b₂ − a₂b₁ = ${fmt(a1*b2)} − ${fmt(a2*b1)} = <strong>${fmt(det)}</strong></div>
-          <div>Δx = c₁b₂ − c₂b₁ = <strong>${fmt(c1*b2 - c2*b1)}</strong></div>
-          <div>Δy = a₁c₂ − a₂c₁ = <strong>${fmt(a1*c2 - a2*c1)}</strong></div>
-          <div>x = Δx / Δ, y = Δy / Δ</div>
-          <div class="answer">x = ${fmt(x)}, y = ${fmt(y)}</div>`);
-    drawSystem(a1, b1, c1, a2, b2, c2, x, y);
-  }
+function polyVal(coeffs, x) {
+  let s = 0;
+  for (let i = coeffs.length - 1; i >= 0; i--) s = s * x + coeffs[i];
+  return s;
+}
 
-  function solveLinearForChart(A, B) {
-    // возвращает функцию y(x) для прямой Ax + By = C
-    if (B !== 0) return x => (A * x - (-(-1))) , null;
-  }
+// ==================== ЧИСЛЕННОЕ РЕШЕНИЕ ====================
 
-  // ---------- график ----------
-  function drawFunction(_, polys, marks, deg) {
-    // polys: массив коэффициентов от старшей степени
-    chart.style.display = 'block';
-    const W = chart.width, H = chart.height;
-    ctx.clearRect(0, 0, W, H);
-
-    // функция f(x)
-    const f = x => polys.reduce((s, p) => {
-      let v = 0;
-      const n = p.a !== undefined ? Object.keys(p).length : 0;
-      // собираем коэффициенты по степеням
-      let cs = [];
-      if (deg === 1) cs = [p.a, p.b];
-      else if (deg === 2) cs = [p.a, p.b, p.c];
-      else if (deg === 3) cs = [p.a, p.b, p.c, p.d];
-      else if (deg === 4) cs = [p.a, p.b, p.c || 0, p.d || 0];
-      for (let i = 0; i < cs.length; i++) v = v * x + cs[i];
-      return s + v;
-    }, 0);
-
-    let span = 10, cxa = 0;
-    if (marks.length) {
-      const cxm = marks.reduce((s, m) => s + m, 0) / marks.length;
-      span = Math.max(6, Math.abs(cxm) * 0.6 + 4);
-      cxa = cxm;
-    }
-
-    const toX = x => W/2 + (x - cxa) * (W / span) / 2;
-    let yMinVal = Infinity, yMaxVal = -Infinity;
-    for (let i = 0; i <= 300; i++) {
-      const x = cxa - span/2 + span * i / 300;
+function findRoots(f) {
+  const roots = [];
+  const ranges = [10, 100, 1000];
+  let R = 10;
+  for (const r of ranges) {
+    R = r;
+    roots.length = 0;
+    let prevX = -R, prevY = f(-R);
+    for (let x = -R + R / 20000; x <= R; x += R / 20000) {
       const y = f(x);
-      yMinVal = Math.min(yMinVal, y);
-      yMaxVal = Math.max(yMaxVal, y);
-    }
-    yMinVal = Math.min(yMinVal, 0);
-    yMaxVal = Math.max(yMaxVal, 0);
-    let ySpan = yMaxVal - yMinVal || 1;
-    // ограничиваем разброс, чтобы график не улетал
-    if (ySpan > span * 3) { ySpan = span * 3; }
-    const yMid = (yMinVal + yMaxVal) / 2;
-    const toY = y => H/2 - Math.max(-ySpan/2, Math.min(ySpan/2, y - yMid)) * (H - 40) / ySpan;
-
-    // сетка и оси
-    ctx.strokeStyle = '#eeeafc';
-    ctx.lineWidth = 1;
-    for (let gx = 0; gx < W; gx += W/12) {
-      ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
-    }
-    ctx.strokeStyle = '#c8c4e8';
-    const y0 = toY(0), x0 = toX(0);
-    if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
-    if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
-
-    // кривая
-    ctx.strokeStyle = '#667eea';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    let started = false;
-    let prevY = null;
-    for (let i = 0; i <= 300; i++) {
-      const x = cxa - span/2 + span * i / 300;
-      let y = f(x);
-      if (!isFinite(y)) { started = false; prevY = null; continue; }
-      // отсекаем вертикальные скачки (асимптоты)
-      if (prevY !== null && Math.abs(y - prevY) > ySpan) { started = false; }
-      const py = toY(y);
-      if (py < -H || py > 2*H) { started = false; prevY = y; continue; }
-      if (!started) { ctx.moveTo(toX(x), py); started = true; }
-      else ctx.lineTo(toX(x), py);
-      prevY = y;
-    }
-    ctx.stroke();
-
-    // отмечаем корни
-    ctx.fillStyle = '#e17055';
-    marks.forEach(m => {
-      ctx.beginPath();
-      ctx.arc(toX(m), toY(0), 6, 0, Math.PI * 2);
-      ctx.fill();
-    });
-  }
-
-  function drawSystem(a1, b1, c1, a2, b2, c2, px, py) {
-    chart.style.display = 'block';
-    const W = chart.width, H = chart.height;
-    ctx.clearRect(0, 0, W, H);
-
-    // прямые в виде y = (C - Ax)/B
-    const lines = [];
-    [[a1, b1, c1], [a2, b2, c2]].forEach(([A, B, C]) => {
-      if (B !== 0) lines.push({ f: x => (C - A * x) / B, color: '#667eea' });
-      else lines.push({ vert: A !== 0 ? C / A : null, color: '#667eea' });
-    });
-
-    // определяем масштаб: центр — точка пересечения или 0
-    const cx = px !== null ? px : 0;
-    const cy = py !== null ? py : 0;
-    const span = Math.max(8, Math.abs(cx) * 0.6 + 4, Math.abs(cy) * 0.6 + 4);
-    const toX = x => W/2 + (x - cx) * (W / span) / 2;
-    const toY = y => H/2 - (y - cy) * (H / span) / 2;
-
-    // сетка и оси
-    ctx.strokeStyle = '#eeeafc';
-    for (let gx = 0; gx < W; gx += W/12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
-    ctx.strokeStyle = '#c8c4e8';
-    const y0 = toY(0), x0 = toX(0);
-    if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
-    if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
-
-    lines.forEach(L => {
-      ctx.strokeStyle = L.color;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      if (L.f) {
-        ctx.moveTo(toX(cx - span/2), toY(L.f(cx - span/2)));
-        ctx.lineTo(toX(cx + span/2), toY(L.f(cx + span/2)));
-      } else if (L.vert !== null) {
-        ctx.moveTo(toX(L.vert), 0);
-        ctx.lineTo(toX(L.vert), H);
+      if (isFinite(y) && isFinite(prevY)) {
+        if (prevY * y <= 0 && Math.abs(y - prevY) < 1e6 * Math.max(Math.abs(y), 1)) {
+          let lo = prevX, hi = x;
+          for (let k = 0; k < 80; k++) {
+            const mid = (lo + hi) / 2;
+            const fm = f(mid);
+            if (!isFinite(fm)) break;
+            if (f(lo) * fm <= 0) hi = mid; else lo = mid;
+          }
+          const root = (lo + hi) / 2;
+          if (Math.abs(f(root)) < 1e-6 && !roots.some(r0 => Math.abs(r0 - root) < 1e-6))
+            roots.push(root);
+        }
+        if (Math.abs(y) < 1e-12) {
+          if (!roots.some(r0 => Math.abs(r0 - x) < 1e-6)) roots.push(x);
+        }
       }
-      ctx.stroke();
-    });
-
-    // точка пересечения
-    if (px !== null) {
-      ctx.fillStyle = '#e17055';
-      ctx.beginPath();
-      ctx.arc(toX(px), toY(py), 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#333';
-      ctx.font = '13px Segoe UI';
-      ctx.fillText(`(${fmt(px)}; ${fmt(py)})`, toX(px) + 10, toY(py) - 10);
+      prevX = x; prevY = y;
+      if (roots.length >= 12) break;
     }
+    if (roots.length) break;
   }
+  return roots;
+}
+
+// ==================== РЕШЕНИЕ И ВЫВОД ====================
+
+const eqInput = document.getElementById('eq');
+const btn = document.getElementById('btn');
+const result = document.getElementById('result');
+const err = document.getElementById('err');
+const chart = document.getElementById('chart');
+const ctx = chart.getContext('2d');
+
+function fmt(x) {
+  if (Number.isInteger(x)) return x.toString();
+  const r = +x.toFixed(4);
+  return r.toString();
+}
+
+function polyStr(coeffs) {
+  const parts = [];
+  for (let i = coeffs.length - 1; i >= 0; i--) {
+    if (Math.abs(coeffs[i]) < 1e-12) continue;
+    const sign = coeffs[i] < 0 ? '− ' : (parts.length ? '+ ' : '');
+    const abs = Math.abs(coeffs[i]);
+    if (i === 0) parts.push(sign + fmt(abs));
+    else if (i === 1) parts.push(sign + (abs === 1 ? '' : fmt(abs)) + 'x');
+    else parts.push(sign + (abs === 1 ? '' : fmt(abs)) + 'x^' + i);
+  }
+  return parts.length ? parts.join(' ') : '0';
+}
+
+function solve() {
+  err.style.display = 'none';
+  result.style.display = 'none';
+  chart.style.display = 'none';
+
+  const raw = eqInput.value.trim();
+  if (!raw) return;
+
+  try {
+    const eqParts = raw.split('=');
+    if (eqParts.length !== 2) throw new Error('нужен ровно один знак «=»');
+    const L = parse(tokenize(eqParts[0]));
+    const R = parse(tokenize(eqParts[1]));
+    if (!hasX(L) && !hasX(R)) throw new Error('в уравнении нет переменной x');
+
+    // F(x) = левая часть − правая часть
+    const F = { t: 'op', op: '-', l: L, r: R };
+    const f = x => evalNode(F, x);
+
+    const steps = [];
+    let answer = '';
+
+    const poly = toPoly(F, 8);
+    if (poly) {
+      // чистим ведущие нули
+      while (poly.length > 1 && Math.abs(poly[poly.length - 1]) < 1e-12) poly.pop();
+      const deg = poly.length - 1;
+      steps.push('Переносим всё в левую часть: ' + polyStr(poly) + ' = 0');
+
+      if (deg === 0) {
+        answer = Math.abs(poly[0]) < 1e-12 ? 'Верно при любом x' : 'Решений нет';
+      } else if (deg === 1) {
+        const x = -poly[0] / poly[1];
+        steps.push('Это линейное уравнение: x = ' + fmt(-poly[0]) + ' / ' + fmt(poly[1]));
+        answer = 'x = ' + fmt(x);
+        drawPlot(f, [x]);
+      } else if (deg === 2) {
+        const a = poly[2], b = poly[1], c = poly[0];
+        const D = b * b - 4 * a * c;
+        steps.push('Дискриминант: D = b² − 4ac = ' + fmt(b * b) + ' − ' + fmt(4 * a * c) + ' = ' + fmt(D));
+        if (D > 0) {
+          const x1 = (-b + Math.sqrt(D)) / (2 * a), x2 = (-b - Math.sqrt(D)) / (2 * a);
+          steps.push('D > 0 — два корня');
+          answer = 'x₁ = ' + fmt(x1) + ', x₂ = ' + fmt(x2);
+          drawPlot(f, [x1, x2]);
+        } else if (Math.abs(D) < 1e-12) {
+          const x = -b / (2 * a);
+          steps.push('D = 0 — один корень');
+          answer = 'x = ' + fmt(x);
+          drawPlot(f, [x]);
+        } else {
+          const re = -b / (2 * a), im = Math.sqrt(-D) / (2 * a);
+          steps.push('D < 0 — действительных корней нет');
+          answer = 'x = ' + fmt(re) + ' ± ' + fmt(Math.abs(im)) + 'i';
+          drawPlot(f, []);
+        }
+      } else {
+        const roots = findRoots(f);
+        if (roots.length) {
+          steps.push('Уравнение степени ' + deg + ' — находим корни численно');
+          answer = 'x ≈ ' + roots.map(r => (+r.toFixed(6)).toString()).join(', ');
+        } else {
+          steps.push('Уравнение степени ' + deg);
+          answer = 'Действительных корней не найдено';
+        }
+        drawPlot(f, roots);
+      }
+    } else {
+      // не полином — численно
+      steps.push('Уравнение с функциями — решаем численно: ищем, где левая и правая части равны');
+      const roots = findRoots(f);
+      if (roots.length) {
+        answer = 'x ≈ ' + roots.map(r => (+r.toFixed(6)).toString()).join(',  ');
+        steps.push('Найдено корней: ' + roots.length + ' (в диапазоне поиска)');
+      } else {
+        answer = 'Действительных корней не найдено (возможно, их нет или они далеко)';
+      }
+      drawPlot(f, roots);
+    }
+
+    result.innerHTML =
+      '<div class="steps">' + steps.map(s => '<div>' + s + '</div>').join('') + '</div>' +
+      '<div class="answer">' + answer + '</div>';
+    result.style.display = 'block';
+  } catch (e) {
+    err.textContent = 'Не получилось разобрать уравнение: ' + e.message;
+    err.style.display = 'block';
+  }
+}
+
+btn.onclick = solve;
+eqInput.addEventListener('keydown', e => { if (e.key === 'Enter') solve(); });
+
+document.querySelectorAll('.ex').forEach(b => {
+  b.onclick = () => { eqInput.value = b.textContent; solve(); };
+});
+
+// ==================== ГРАФИК ====================
+
+function drawPlot(f, roots) {
+  chart.style.display = 'block';
+  const W = chart.width, H = chart.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // центр и масштаб
+  let cx = 0, span = 10;
+  if (roots.length) {
+    cx = roots.reduce((s, r) => s + r, 0) / roots.length;
+    const spread = Math.max(...roots.map(r => Math.abs(r - cx)));
+    span = Math.max(6, spread * 2.5 + 2, Math.abs(cx) * 0.6 + 3);
+  }
+
+  const toX = x => W / 2 + (x - cx) * (W / span) / 2;
+  let yMin = Infinity, yMax = -Infinity;
+  const N = 400;
+  for (let i = 0; i <= N; i++) {
+    const y = f(cx - span / 2 + span * i / N);
+    if (isFinite(y)) { yMin = Math.min(yMin, y); yMax = Math.max(yMax, y); }
+  }
+  if (!isFinite(yMin)) { yMin = -5; yMax = 5; }
+  yMin = Math.min(yMin, 0); yMax = Math.max(yMax, 0);
+  let ySpan = yMax - yMin || 1;
+  if (ySpan > span * 2) ySpan = span * 2; // не даём графику «улетать»
+  const yMid = (yMin + yMax) / 2;
+  const toY = y => H / 2 - Math.max(-ySpan / 2, Math.min(ySpan / 2, y - yMid)) * (H - 30) / ySpan;
+
+  // сетка
+  ctx.strokeStyle = '#eeeafc'; ctx.lineWidth = 1;
+  for (let gx = 0; gx < W; gx += W / 12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+
+  // оси
+  ctx.strokeStyle = '#c8c4e8';
+  const y0 = toY(0), x0 = toX(0);
+  if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
+  if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
+
+  // кривая
+  ctx.strokeStyle = '#667eea'; ctx.lineWidth = 3;
+  ctx.beginPath();
+  let started = false, prevY = null;
+  for (let i = 0; i <= N; i++) {
+    const x = cx - span / 2 + span * i / N;
+    const y = f(x);
+    if (!isFinite(y)) { started = false; prevY = null; continue; }
+    if (prevY !== null && Math.abs(y - prevY) > ySpan) started = false; // разрыв
+    const py = toY(y);
+    if (py < -H || py > 2 * H) { started = false; prevY = y; continue; }
+    if (!started) { ctx.moveTo(toX(x), py); started = true; }
+    else ctx.lineTo(toX(x), py);
+    prevY = y;
+  }
+  ctx.stroke();
+
+  // корни
+  ctx.fillStyle = '#e17055';
+  roots.forEach(r => {
+    ctx.beginPath();
+    ctx.arc(toX(r), toY(0), 6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
 </script>
 </body>
 </html>
