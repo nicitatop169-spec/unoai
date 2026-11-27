@@ -28,7 +28,6 @@
     --grid-line: #eeeafc;
     --axis-line: #c8c4e8;
     --chart-bg: #fdfdff;
-    --curve: #667eea;
     --root-dot: #e17055;
     --divider: #d5d0f0;
     --shadow: 0 20px 60px rgba(30, 20, 80, 0.35);
@@ -55,7 +54,6 @@
     --grid-line: #2e2a52;
     --axis-line: #4a4578;
     --chart-bg: #221f40;
-    --curve: #8b93ff;
     --root-dot: #ff8a5c;
     --divider: #3d3968;
     --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
@@ -84,7 +82,6 @@
     --grid-line: #2d2856;
     --axis-line: #4c468a;
     --chart-bg: #211d48;
-    --curve: #a78bfa;
     --root-dot: #fb923c;
     --divider: #3f3a70;
     --shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
@@ -106,7 +103,6 @@
     color: var(--text-main);
   }
 
-  /* Плавающие декоративные шарики на фоне */
   .blob {
     position: fixed;
     border-radius: 50%;
@@ -152,13 +148,10 @@
     margin-bottom: 10px;
   }
 
-  h1 {
-    color: var(--accent-dark);
-    font-size: 22px;
-    letter-spacing: 0.3px;
-  }
+  h1 { color: var(--accent-dark); font-size: 22px; letter-spacing: 0.3px; }
 
-  /* Переключатель темы */
+  .top-controls { display: flex; gap: 6px; align-items: center; }
+
   .theme-switch {
     display: flex;
     background: var(--key-bg);
@@ -166,7 +159,7 @@
     padding: 3px;
     gap: 2px;
   }
-  .theme-btn {
+  .theme-btn, .custom-btn {
     border: none;
     background: transparent;
     border-radius: 999px;
@@ -177,10 +170,70 @@
     transition: 0.25s;
     line-height: 1;
   }
-  .theme-btn.active {
+  .theme-btn.active, .custom-btn.active {
     background: var(--accent);
     box-shadow: var(--glow);
   }
+  .custom-btn { background: var(--key-bg); }
+
+  .panel {
+    display: none;
+    background: var(--result-bg);
+    border-radius: 14px;
+    padding: 14px;
+    margin-top: 12px;
+    animation: appear 0.3s ease both;
+  }
+  .panel.open { display: block; }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 6px 0 10px;
+  }
+  .panel-title:first-child { margin-top: 0; }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .swatch {
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 0;
+    font-size: 9px;
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+  }
+  .swatch:hover { transform: scale(1.1); }
+  .swatch.active { border-color: var(--text-main); box-shadow: var(--glow); }
+
+  .panel-actions { display: flex; gap: 8px; }
+  .panel-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-reset { background: var(--key-bg); color: var(--text-soft); }
+  .panel-actions button:active { transform: scale(0.97); }
 
   .subtitle { text-align: center; color: var(--text-soft); font-size: 13px; margin-bottom: 18px; }
 
@@ -199,17 +252,14 @@
     outline: none;
     transition: 0.25s;
   }
-  #eq:focus {
-    border-color: var(--accent);
-    box-shadow: var(--glow);
-  }
+  #eq:focus { border-color: var(--accent); box-shadow: var(--glow); }
   #eq::placeholder { color: var(--text-soft); }
 
   button.solve {
     padding: 14px 18px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+    background: linear-gradient(135deg, var(--btn-grad-1, #667eea), var(--btn-grad-2, #764ba2));
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -218,10 +268,9 @@
     white-space: nowrap;
     box-shadow: 0 6px 18px rgba(102, 126, 234, 0.45);
   }
-  button.solve:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(102, 126, 234, 0.55); }
+  button.solve:hover { transform: translateY(-2px); }
   button.solve:active { transform: scale(0.97); }
 
-  /* Клавиатурка */
   .keypad {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -315,6 +364,13 @@
     display: none;
     animation: appear 0.35s ease both;
   }
+
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
 </style>
 </head>
 <body>
@@ -324,13 +380,27 @@
   <div class="card">
     <div class="top-bar">
       <h1>🧮 Решатель уравнений</h1>
-      <div class="theme-switch" id="themes">
-        <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
-        <button class="theme-btn" data-theme="dark" title="Тёмная">🌙</button>
-        <button class="theme-btn" data-theme="midnight" title="Полночная">🌌</button>
+      <div class="top-controls">
+        <button class="custom-btn" id="customBtn" title="Настроить цвета">🎨</button>
+        <div class="theme-switch" id="themes">
+          <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
+          <button class="theme-btn" data-theme="dark" title="Тёмная">🌙</button>
+          <button class="theme-btn" data-theme="midnight" title="Полночная">🌌</button>
+        </div>
       </div>
     </div>
     <p class="subtitle">Напишите уравнение — сайт сам его разберёт и решит</p>
+
+    <!-- Панель: 10 фонов + 10 кнопок -->
+    <div class="panel" id="panel">
+      <div class="panel-title">Фон — 10 вариантов</div>
+      <div class="swatches" id="swBg"></div>
+      <div class="panel-title">Кнопка «Решить» — 10 вариантов</div>
+      <div class="swatches" id="swBtn"></div>
+      <div class="panel-actions">
+        <button class="btn-reset" id="resetColors">Сбросить к теме</button>
+      </div>
+    </div>
 
     <div class="input-row">
       <input type="text" id="eq" placeholder="x^2 - 5x + 6 = 0" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -385,6 +455,8 @@
     <div class="error" id="err"></div>
     <div class="result" id="result"></div>
     <canvas id="chart" width="540" height="300"></canvas>
+
+    <div class="footer">Сайт создали: giver | uno</div>
   </div>
 
 <script>
@@ -745,56 +817,121 @@ document.querySelectorAll('.ex').forEach(b => {
   b.onclick = () => { eqInput.value = b.textContent; solve(); };
 });
 
-// ==================== ПЕРЕКЛЮЧЕНИЕ ТЕМ ====================
+// ==================== ТЕМЫ И ЦВЕТА ====================
 const themesBox = document.getElementById('themes');
-const savedTheme = localStorage.getItem('solver-theme');
-let currentTheme = savedTheme || 'light';
-applyTheme(currentTheme);
+const customBtn = document.getElementById('customBtn');
+const panel = document.getElementById('panel');
+
+// 10 фонов: [цвет1, цвет2, название]
+const PRESETS_BG = [
+  ['#667eea', '#764ba2', 'Сирень'],
+  ['#f5576c', '#f093fb', 'Закат'],
+  ['#11998e', '#38ef7d', 'Лайм'],
+  ['#f7971e', '#ffd200', 'Солнце'],
+  ['#000428', '#004e92', 'Океан'],
+  ['#c31432', '#240b36', 'Гранат'],
+  ['#0f0c29', '#302b63', 'Космос'],
+  ['#fc4a1a', '#f7b733', 'Пламя'],
+  ['#43cea2', '#185a9d', 'Мята'],
+  ['#41295a', '#2F0743', 'Ночь']
+];
+
+// 10 кнопок: [цвет1, цвет2, название]
+const PRESETS_BTN = [
+  ['#667eea', '#764ba2', 'Сирень'],
+  ['#f5576c', '#f093fb', 'Роза'],
+  ['#11998e', '#38ef7d', 'Лайм'],
+  ['#f7971e', '#ffd200', 'Мандарин'],
+  ['#004e92', '#11998e', 'Изумруд'],
+  ['#c31432', '#8e0e00', 'Рубин'],
+  ['#8E2DE2', '#4A00E0', 'Электро'],
+  ['#fc4a1a', '#f7b733', 'Пламя'],
+  ['#2193b0', '#6dd5ed', 'Лагуна'],
+  ['#232526', '#414345', 'Графит']
+];
+
+customBtn.addEventListener('click', () => {
+  panel.classList.toggle('open');
+  customBtn.classList.toggle('active', panel.classList.contains('open'));
+});
+
+function makeSwatches(boxId, presets, storageKey, cssVar1, cssVar2) {
+  const box = document.getElementById(boxId);
+  const savedIdx = localStorage.getItem(storageKey);
+  presets.forEach((p, idx) => {
+    const sw = document.createElement('button');
+    sw.className = 'swatch' + (String(idx) === savedIdx ? ' active' : '');
+    sw.title = p[2];
+    sw.textContent = p[2];
+    sw.style.background = 'linear-gradient(135deg, ' + p[0] + ', ' + p[1] + ')';
+    sw.onclick = () => {
+      document.documentElement.style.setProperty(cssVar1, p[0]);
+      document.documentElement.style.setProperty(cssVar2, p[1]);
+      localStorage.setItem(storageKey, idx);
+      box.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+    };
+    box.appendChild(sw);
+  });
+  // применяем сохранённый выбор сразу при загрузке
+  if (savedIdx !== null && presets[savedIdx]) {
+    document.documentElement.style.setProperty(cssVar1, presets[savedIdx][0]);
+    document.documentElement.style.setProperty(cssVar2, presets[savedIdx][1]);
+  }
+}
+
+makeSwatches('swBg', PRESETS_BG, 'solver-bg', '--bg-grad-1', '--bg-grad-2');
+makeSwatches('swBtn', PRESETS_BTN, 'solver-btn', '--btn-grad-1', '--btn-grad-2');
+
+document.getElementById('resetColors').onclick = () => {
+  localStorage.removeItem('solver-bg');
+  localStorage.removeItem('solver-btn');
+  // возвращаем цвета текущей темы
+  document.documentElement.style.removeProperty('--bg-grad-1');
+  document.documentElement.style.removeProperty('--bg-grad-2');
+  document.documentElement.style.removeProperty('--btn-grad-1');
+  document.documentElement.style.removeProperty('--btn-grad-2');
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  scheduleChartRedraw();
+};
+
+// при загрузке: тема
+let currentTheme = localStorage.getItem('solver-theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+themesBox.querySelectorAll('.theme-btn').forEach(b =>
+  b.classList.toggle('active', b.dataset.theme === currentTheme));
 
 themesBox.querySelectorAll('.theme-btn').forEach(b => {
   b.addEventListener('click', () => {
     currentTheme = b.dataset.theme;
-    applyTheme(currentTheme);
+    document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('solver-theme', currentTheme);
+    themesBox.querySelectorAll('.theme-btn').forEach(x =>
+      x.classList.toggle('active', x.dataset.theme === currentTheme));
+    // стандартная тема сбрасывает свои фон и кнопку
+    document.getElementById('resetColors').onclick();
   });
 });
 
-function applyTheme(t) {
-  document.documentElement.setAttribute('data-theme', t);
-  // при смене темы перекрашиваем график, если он открыт
-  themesBox.querySelectorAll('.theme-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.theme === t));
-  const card = document.querySelector('.card');
-  const wasVisible = chart.style.display === 'block';
-  if (wasVisible) {
-    // перерисовываем график через небольшой таймаут, чтобы CSS успел примениться
-    setTimeout(() => {
-      const m = getComputedStyle(document.documentElement);
-      gridCol = m.getPropertyValue('--grid-line').trim();
-      axisCol = m.getPropertyValue('--axis-line').trim();
-      curveCol = m.getPropertyValue('--curve').trim();
-      rootCol = m.getPropertyValue('--root-dot').trim();
-      redrawLast();
-    }, 50);
-  }
-}
-
+// ==================== ГРАФИК ====================
 let gridCol = '#eeeafc', axisCol = '#c8c4e8', curveCol = '#667eea', rootCol = '#e17055';
 let lastF = null, lastRoots = [];
 
-function redrawLast() {
-  if (lastF) drawPlot(lastF, lastRoots);
+function scheduleChartRedraw() {
+  if (lastF) setTimeout(() => drawPlot(lastF, lastRoots), 60);
 }
 
-// ==================== ГРАФИК ====================
-function drawPlot(f, roots) {
-  lastF = f; lastRoots = roots;
-  // подхватываем цвета из текущей темы
+function readChartColors() {
   const m = getComputedStyle(document.documentElement);
   gridCol = m.getPropertyValue('--grid-line').trim();
   axisCol = m.getPropertyValue('--axis-line').trim();
-  curveCol = m.getPropertyValue('--curve').trim();
+  curveCol = m.getPropertyValue('--accent').trim();
   rootCol = m.getPropertyValue('--root-dot').trim();
+}
+
+function drawPlot(f, roots) {
+  lastF = f; lastRoots = roots;
+  readChartColors();
 
   chart.style.display = 'block';
   const dpr = window.devicePixelRatio || 1;
