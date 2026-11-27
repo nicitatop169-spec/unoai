@@ -2,10 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#667eea">
 <title>Решатель уравнений</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
     font-family: 'Segoe UI', sans-serif;
@@ -14,7 +15,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 40px 16px;
+    padding: 16px;
   }
 
   .card {
@@ -23,20 +24,21 @@
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     max-width: 560px;
     width: 100%;
-    padding: 36px;
+    padding: 22px 16px;
   }
 
-  h1 { text-align: center; color: #4a3f8f; font-size: 26px; margin-bottom: 6px; }
-  .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 22px; }
+  h1 { text-align: center; color: #4a3f8f; font-size: 22px; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 18px; }
 
-  .input-row { display: flex; gap: 10px; }
+  .input-row { display: flex; gap: 8px; }
 
   #eq {
     flex: 1;
-    padding: 14px 16px;
+    min-width: 0;
+    padding: 14px 12px;
     border: 2px solid #e0ddef;
     border-radius: 12px;
-    font-size: 17px;
+    font-size: 18px;
     font-family: 'Consolas', monospace;
     outline: none;
     transition: 0.2s;
@@ -44,7 +46,7 @@
   #eq:focus { border-color: #667eea; }
 
   button.solve {
-    padding: 14px 22px;
+    padding: 14px 18px;
     border: none;
     border-radius: 12px;
     background: linear-gradient(135deg, #667eea, #764ba2);
@@ -55,84 +57,122 @@
     transition: 0.2s;
     white-space: nowrap;
   }
-  button.solve:hover { opacity: 0.9; transform: translateY(-1px); }
+  button.solve:active { transform: scale(0.97); }
 
-  .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
-  .ex {
+  /* Клавиатурка для ввода */
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .key {
     background: #f0eefc;
-    color: #667eea;
+    color: #4a3f8f;
     border: none;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
+    border-radius: 10px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
     font-family: 'Consolas', monospace;
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.15s;
+    user-select: none;
   }
-  .ex:hover { background: #667eea; color: white; }
+  .key:active { background: #667eea; color: white; transform: scale(0.95); }
+  .key.fn { background: #e8f4fd; color: #2b7bc0; }
+  .key.del { background: #fdecea; color: #d63031; }
+
+  .examples { display: none; } /* на телефоне примеры уходят, клавиатурка важнее */
+
+  @media (min-width: 600px) {
+    .card { padding: 36px; }
+    .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
+    .ex {
+      background: #f0eefc; color: #667eea; border: none; border-radius: 20px;
+      padding: 6px 14px; font-size: 13px; font-family: 'Consolas', monospace;
+      cursor: pointer; transition: 0.2s;
+    }
+    .ex:hover { background: #667eea; color: white; }
+    .keypad { grid-template-columns: repeat(10, 1fr); }
+    h1 { font-size: 26px; }
+  }
 
   .error {
-    color: #d63031;
-    margin-top: 14px;
-    display: none;
-    font-size: 14px;
-    background: #fdecea;
-    border-radius: 10px;
-    padding: 10px 14px;
+    color: #d63031; margin-top: 14px; display: none; font-size: 14px;
+    background: #fdecea; border-radius: 10px; padding: 10px 14px;
   }
 
   .result {
-    margin-top: 22px;
-    background: #f8f7ff;
-    border-radius: 12px;
-    padding: 18px;
-    display: none;
-    line-height: 1.7;
-    color: #333;
-    font-size: 15px;
+    margin-top: 22px; background: #f8f7ff; border-radius: 12px; padding: 16px;
+    display: none; line-height: 1.7; color: #333; font-size: 15px;
+    overflow-x: auto;
   }
   .result .steps div { margin: 4px 0; }
   .result .answer {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed #d5d0f0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #4a3f8f;
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed #d5d0f0;
+    font-size: 18px; font-weight: 700; color: #4a3f8f; word-break: break-word;
   }
 
   canvas {
-    margin-top: 18px;
-    width: 100%;
-    border-radius: 12px;
-    background: #fdfdff;
-    display: none;
+    margin-top: 18px; width: 100%; height: 260px;
+    border-radius: 12px; background: #fdfdff; display: none;
   }
-
-  .hidden { display: none !important; }
 </style>
 </head>
 <body>
   <div class="card">
     <h1>🧮 Решатель уравнений</h1>
-    <p class="subtitle">Просто напишите уравнение — сайт сам его разберёт и решит</p>
+    <p class="subtitle">Напишите уравнение — сайт сам его разберёт и решит</p>
 
     <div class="input-row">
-      <input type="text" id="eq" placeholder="например: x^2 - 5x + 6 = 0" autocomplete="off">
+      <input type="text" id="eq" placeholder="x^2 - 5x + 6 = 0" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button class="solve" id="btn">Решить</button>
+    </div>
+
+    <!-- Клавиатурка для телефона -->
+    <div class="keypad" id="keypad">
+      <button class="key" data-ins="7">7</button>
+      <button class="key" data-ins="8">8</button>
+      <button class="key" data-ins="9">9</button>
+      <button class="key" data-ins="/">÷</button>
+      <button class="key" data-ins="("> </button>
+      <button class="key del" data-del="1">⌫</button>
+      <button class="key" data-ins="4">4</button>
+      <button class="key" data-ins="5">5</button>
+      <button class="key" data-ins="6">6</button>
+      <button class="key" data-ins="*">×</button>
+      <button class="key" data-ins=")">)</button>
+      <button class="key" data-ins="=">=</button>
+      <button class="key" data-ins="1">1</button>
+      <button class="key" data-ins="2">2</button>
+      <button class="key" data-ins="3">3</button>
+      <button class="key" data-ins="-">−</button>
+      <button class="key" data-ins="^">x^</button>
+      <button class="key" data-ins="x">x</button>
+      <button class="key" data-ins="0">0</button>
+      <button class="key" data-ins=".">,</button>
+      <button class="key" data-ins="+">+</button>
+      <button class="key fn" data-ins="sqrt(">√</button>
+      <button class="key fn" data-ins="sin(">sin</button>
+      <button class="key fn" data-ins="cos(">cos</button>
+      <button class="key fn" data-ins="tan(">tg</button>
+      <button class="key fn" data-ins="pi">π</button>
+      <button class="key fn" data-ins="ln(">ln</button>
+      <button class="key fn" data-ins="log(">log</button>
+      <button class="key fn" data-ins="abs(">|a|</button>
+      <button class="key fn" data-ins="e">e</button>
+      <button class="key fn" data-clear="1">Очистить</button>
     </div>
 
     <div class="examples">
       <button class="ex">x^2 - 5x + 6 = 0</button>
       <button class="ex">2x + 3 = 5</button>
       <button class="ex">x^3 - 6x^2 + 11x - 6 = 0</button>
-      <button class="ex">x^4 - 5x^2 + 4 = 0</button>
       <button class="ex">(x+1)(x-3) = 0</button>
-      <button class="ex">2(x - 4) = 3x + 1</button>
       <button class="ex">x/2 + 1 = x/3 - 2</button>
       <button class="ex">sin(x) = 0.5</button>
       <button class="ex">2^x = 16</button>
-      <button class="ex">x^2 = 2x + 8</button>
     </div>
 
     <div class="error" id="err"></div>
@@ -141,11 +181,9 @@
   </div>
 
 <script>
-// ==================== ПАРСЕР ВЫРАЖЕНИЙ ====================
-// Узлы: {t:'num', v} {t:'x'} {t:'op', op, l, r} {t:'fn', name, arg}
-
+// ==================== ПАРСЕР ====================
 function tokenize(s) {
-  s = s.replace(/√/g, 'sqrt').replace(/·|×/g, '*').replace(/,/g, '.');
+  s = s.replace(/√/g, 'sqrt').replace(/·|×/g, '*').replace(/−/g, '-').replace(/,/g, '.').replace(/π/g, 'pi');
   const tokens = [];
   let i = 0;
   while (i < s.length) {
@@ -192,9 +230,7 @@ function parse(tokens) {
     let node = parseUnary();
     for (;;) {
       const p = peek();
-      // неявное умножение: 2x, 3(x+1), x sin(x)
-      if (p && (p.t === 'id' || p.t === 'num' || p.t === '(') &&
-          node.t !== 'op') {
+      if (p && (p.t === 'id' || p.t === 'num' || p.t === '(') && node.t !== 'op') {
         node = { t: 'op', op: '*', l: node, r: parseUnary() };
         continue;
       }
@@ -213,10 +249,7 @@ function parse(tokens) {
 
   function parsePower() {
     const base = parsePrimary();
-    if (peek() && peek().t === '^') {
-      next();
-      return { t: 'op', op: '^', l: base, r: parseUnary() };
-    }
+    if (peek() && peek().t === '^') { next(); return { t: 'op', op: '^', l: base, r: parseUnary() }; }
     return base;
   }
 
@@ -286,9 +319,6 @@ function hasX(node) {
   return false;
 }
 
-// ==================== ПОЛИНОМЫ ====================
-// возвращает массив коэффициентов по возрастанию степени или null
-
 function toPoly(node, maxDeg) {
   if (node.t === 'num') return [node.v];
   if (node.t === 'x') return [0, 1];
@@ -323,14 +353,6 @@ function toPoly(node, maxDeg) {
   return null;
 }
 
-function polyVal(coeffs, x) {
-  let s = 0;
-  for (let i = coeffs.length - 1; i >= 0; i--) s = s * x + coeffs[i];
-  return s;
-}
-
-// ==================== ЧИСЛЕННОЕ РЕШЕНИЕ ====================
-
 function findRoots(f) {
   const roots = [];
   const ranges = [10, 100, 1000];
@@ -354,9 +376,7 @@ function findRoots(f) {
           if (Math.abs(f(root)) < 1e-6 && !roots.some(r0 => Math.abs(r0 - root) < 1e-6))
             roots.push(root);
         }
-        if (Math.abs(y) < 1e-12) {
-          if (!roots.some(r0 => Math.abs(r0 - x) < 1e-6)) roots.push(x);
-        }
+        if (Math.abs(y) < 1e-12 && !roots.some(r0 => Math.abs(r0 - x) < 1e-6)) roots.push(x);
       }
       prevX = x; prevY = y;
       if (roots.length >= 12) break;
@@ -366,8 +386,7 @@ function findRoots(f) {
   return roots;
 }
 
-// ==================== РЕШЕНИЕ И ВЫВОД ====================
-
+// ==================== UI ====================
 const eqInput = document.getElementById('eq');
 const btn = document.getElementById('btn');
 const result = document.getElementById('result');
@@ -377,8 +396,7 @@ const ctx = chart.getContext('2d');
 
 function fmt(x) {
   if (Number.isInteger(x)) return x.toString();
-  const r = +x.toFixed(4);
-  return r.toString();
+  return (+x.toFixed(4)).toString();
 }
 
 function polyStr(coeffs) {
@@ -409,7 +427,6 @@ function solve() {
     const R = parse(tokenize(eqParts[1]));
     if (!hasX(L) && !hasX(R)) throw new Error('в уравнении нет переменной x');
 
-    // F(x) = левая часть − правая часть
     const F = { t: 'op', op: '-', l: L, r: R };
     const f = x => evalNode(F, x);
 
@@ -418,7 +435,6 @@ function solve() {
 
     const poly = toPoly(F, 8);
     if (poly) {
-      // чистим ведущие нули
       while (poly.length > 1 && Math.abs(poly[poly.length - 1]) < 1e-12) poly.pop();
       const deg = poly.length - 1;
       steps.push('Переносим всё в левую часть: ' + polyStr(poly) + ' = 0');
@@ -462,8 +478,7 @@ function solve() {
         drawPlot(f, roots);
       }
     } else {
-      // не полином — численно
-      steps.push('Уравнение с функциями — решаем численно: ищем, где левая и правая части равны');
+      steps.push('Уравнение с функциями — решаем численно');
       const roots = findRoots(f);
       if (roots.length) {
         answer = 'x ≈ ' + roots.map(r => (+r.toFixed(6)).toString()).join(',  ');
@@ -487,18 +502,56 @@ function solve() {
 btn.onclick = solve;
 eqInput.addEventListener('keydown', e => { if (e.key === 'Enter') solve(); });
 
+// Клавиатурка: вставка в позицию курсора
+const ins = { '>=': '=' };
+document.querySelectorAll('.key[data-ins]').forEach(k => {
+  k.addEventListener('click', () => {
+    const text = k.dataset.ins;
+    const start = eqInput.selectionStart ?? eqInput.value.length;
+    const end = eqInput.selectionEnd ?? eqInput.value.length;
+    eqInput.value = eqInput.value.slice(0, start) + text + eqInput.value.slice(end);
+    const pos = start + text.length;
+    eqInput.focus();
+    eqInput.setSelectionRange(pos, pos);
+  });
+});
+
+document.querySelector('.key[data-del]').addEventListener('click', () => {
+  const start = eqInput.selectionStart ?? eqInput.value.length;
+  const end = eqInput.selectionEnd ?? eqInput.value.length;
+  if (start === end && start > 0) {
+    eqInput.value = eqInput.value.slice(0, start - 1) + eqInput.value.slice(end);
+    eqInput.focus();
+    eqInput.setSelectionRange(start - 1, start - 1);
+  } else if (start !== end) {
+    eqInput.value = eqInput.value.slice(0, start) + eqInput.value.slice(end);
+    eqInput.focus();
+    eqInput.setSelectionRange(start, start);
+  }
+});
+
+document.querySelector('.key[data-clear]').addEventListener('click', () => {
+  eqInput.value = '';
+  eqInput.focus();
+});
+
 document.querySelectorAll('.ex').forEach(b => {
   b.onclick = () => { eqInput.value = b.textContent; solve(); };
 });
 
 // ==================== ГРАФИК ====================
-
 function drawPlot(f, roots) {
   chart.style.display = 'block';
-  const W = chart.width, H = chart.height;
+  // на телефоне канвас растянут по ширине — пересчитываем пропорции
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = chart.clientWidth || 500;
+  const cssH = 260;
+  chart.width = cssW * dpr;
+  chart.height = cssH * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = cssW, H = cssH;
   ctx.clearRect(0, 0, W, H);
 
-  // центр и масштаб
   let cx = 0, span = 10;
   if (roots.length) {
     cx = roots.reduce((s, r) => s + r, 0) / roots.length;
@@ -516,21 +569,18 @@ function drawPlot(f, roots) {
   if (!isFinite(yMin)) { yMin = -5; yMax = 5; }
   yMin = Math.min(yMin, 0); yMax = Math.max(yMax, 0);
   let ySpan = yMax - yMin || 1;
-  if (ySpan > span * 2) ySpan = span * 2; // не даём графику «улетать»
+  if (ySpan > span * 2) ySpan = span * 2;
   const yMid = (yMin + yMax) / 2;
   const toY = y => H / 2 - Math.max(-ySpan / 2, Math.min(ySpan / 2, y - yMid)) * (H - 30) / ySpan;
 
-  // сетка
   ctx.strokeStyle = '#eeeafc'; ctx.lineWidth = 1;
-  for (let gx = 0; gx < W; gx += W / 12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+  for (let gx = 0; gx <= W; gx += W / 12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
 
-  // оси
   ctx.strokeStyle = '#c8c4e8';
   const y0 = toY(0), x0 = toX(0);
   if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
   if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
 
-  // кривая
   ctx.strokeStyle = '#667eea'; ctx.lineWidth = 3;
   ctx.beginPath();
   let started = false, prevY = null;
@@ -538,7 +588,7 @@ function drawPlot(f, roots) {
     const x = cx - span / 2 + span * i / N;
     const y = f(x);
     if (!isFinite(y)) { started = false; prevY = null; continue; }
-    if (prevY !== null && Math.abs(y - prevY) > ySpan) started = false; // разрыв
+    if (prevY !== null && Math.abs(y - prevY) > ySpan) started = false;
     const py = toY(y);
     if (py < -H || py > 2 * H) { started = false; prevY = y; continue; }
     if (!started) { ctx.moveTo(toX(x), py); started = true; }
@@ -547,7 +597,6 @@ function drawPlot(f, roots) {
   }
   ctx.stroke();
 
-  // корни
   ctx.fillStyle = '#e17055';
   roots.forEach(r => {
     ctx.beginPath();
