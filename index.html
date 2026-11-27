@@ -158,6 +158,8 @@
     letter-spacing: 0.3px;
   }
 
+  .top-controls { display: flex; gap: 6px; align-items: center; }
+
   /* Переключатель темы */
   .theme-switch {
     display: flex;
@@ -181,6 +183,71 @@
     background: var(--accent);
     box-shadow: var(--glow);
   }
+
+  /* Кнопка настройки цветов */
+  .custom-btn {
+    border: none;
+    background: var(--key-bg);
+    border-radius: 999px;
+    width: 36px;
+    height: 30px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.25s;
+    line-height: 1;
+  }
+  .custom-btn:active { transform: scale(0.93); }
+  .custom-btn.active { background: var(--accent); box-shadow: var(--glow); }
+
+  /* Панель настройки цветов */
+  .panel {
+    display: none;
+    background: var(--result-bg);
+    border-radius: 14px;
+    padding: 14px;
+    margin-top: 12px;
+    animation: appear 0.3s ease both;
+  }
+  .panel.open { display: block; }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .color-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .color-row span { font-size: 14px; color: var(--text-main); }
+  .color-row input[type="color"] {
+    width: 44px;
+    height: 34px;
+    border: 2px solid var(--input-border);
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    padding: 2px;
+  }
+  .panel-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .panel-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-apply { background: var(--accent); color: white; }
+  .btn-reset { background: var(--key-bg); color: var(--text-soft); }
+  .panel-actions button:active { transform: scale(0.97); }
 
   .subtitle { text-align: center; color: var(--text-soft); font-size: 13px; margin-bottom: 18px; }
 
@@ -209,7 +276,7 @@
     padding: 14px 18px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+    background: linear-gradient(135deg, var(--btn-grad-1, var(--bg-grad-1)), var(--btn-grad-2, var(--bg-grad-2)));
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -218,7 +285,7 @@
     white-space: nowrap;
     box-shadow: 0 6px 18px rgba(102, 126, 234, 0.45);
   }
-  button.solve:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(102, 126, 234, 0.55); }
+  button.solve:hover { transform: translateY(-2px); }
   button.solve:active { transform: scale(0.97); }
 
   /* Клавиатурка */
@@ -324,13 +391,30 @@
   <div class="card">
     <div class="top-bar">
       <h1>🧮 Решатель уравнений</h1>
-      <div class="theme-switch" id="themes">
-        <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
-        <button class="theme-btn" data-theme="dark" title="Тёмная">🌙</button>
-        <button class="theme-btn" data-theme="midnight" title="Полночная">🌌</button>
+      <div class="top-controls">
+        <button class="custom-btn" id="customBtn" title="Настроить цвета">🎨</button>
+        <div class="theme-switch" id="themes">
+          <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
+          <button class="theme-btn" data-theme="dark" title="Тёмная">🌙</button>
+          <button class="theme-btn" data-theme="midnight" title="Полночная">🌌</button>
+        </div>
       </div>
     </div>
     <p class="subtitle">Напишите уравнение — сайт сам его разберёт и решит</p>
+
+    <!-- Панель настройки цветов -->
+    <div class="panel" id="panel">
+      <div class="panel-title">Свои цвета</div>
+      <div class="color-row"><span>Фон — верхний цвет</span><input type="color" id="c-bg1" value="#667eea"></div>
+      <div class="color-row"><span>Фон — нижний цвет</span><input type="color" id="c-bg2" value="#764ba2"></div>
+      <div class="color-row"><span>Кнопка «Решить» — цвет 1</span><input type="color" id="c-btn1" value="#667eea"></div>
+      <div class="color-row"><span>Кнопка «Решить» — цвет 2</span><input type="color" id="c-btn2" value="#764ba2"></div>
+      <div class="color-row"><span>Акцент (ответ, график)</span><input type="color" id="c-acc" value="#667eea"></div>
+      <div class="panel-actions">
+        <button class="btn-apply" id="applyColors">Применить</button>
+        <button class="btn-reset" id="resetColors">Сбросить</button>
+      </div>
+    </div>
 
     <div class="input-row">
       <input type="text" id="eq" placeholder="x^2 - 5x + 6 = 0" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -747,8 +831,9 @@ document.querySelectorAll('.ex').forEach(b => {
 
 // ==================== ПЕРЕКЛЮЧЕНИЕ ТЕМ ====================
 const themesBox = document.getElementById('themes');
-const savedTheme = localStorage.getItem('solver-theme');
-let currentTheme = savedTheme || 'light';
+const customBtn = document.getElementById('customBtn');
+const panel = document.getElementById('panel');
+let currentTheme = localStorage.getItem('solver-theme') || 'light';
 applyTheme(currentTheme);
 
 themesBox.querySelectorAll('.theme-btn').forEach(b => {
@@ -756,108 +841,78 @@ themesBox.querySelectorAll('.theme-btn').forEach(b => {
     currentTheme = b.dataset.theme;
     applyTheme(currentTheme);
     localStorage.setItem('solver-theme', currentTheme);
+    // стандартная тема сбрасывает кастомные цвета
+    clearCustomColors();
   });
+});
+
+customBtn.addEventListener('click', () => {
+  panel.classList.toggle('open');
+  customBtn.classList.toggle('active', panel.classList.contains('open'));
 });
 
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
-  // при смене темы перекрашиваем график, если он открыт
   themesBox.querySelectorAll('.theme-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.theme === t));
-  const card = document.querySelector('.card');
-  const wasVisible = chart.style.display === 'block';
-  if (wasVisible) {
-    // перерисовываем график через небольшой таймаут, чтобы CSS успел примениться
-    setTimeout(() => {
-      const m = getComputedStyle(document.documentElement);
-      gridCol = m.getPropertyValue('--grid-line').trim();
-      axisCol = m.getPropertyValue('--axis-line').trim();
-      curveCol = m.getPropertyValue('--curve').trim();
-      rootCol = m.getPropertyValue('--root-dot').trim();
-      redrawLast();
-    }, 50);
+  // после смены темы перечитываем цвета графика
+  scheduleChartRedraw();
+}
+
+// ==================== СВОИ ЦВЕТА ====================
+const colorIds = {
+  'c-bg1': '--bg-grad-1',
+  'c-bg2': '--bg-grad-2',
+  'c-btn1': '--btn-grad-1',
+  'c-btn2': '--btn-grad-2',
+  'c-acc': '--accent'
+};
+
+// при загрузке подставляем в пикеры сохранённые значения
+const savedCustom = JSON.parse(localStorage.getItem('solver-custom') || 'null');
+if (savedCustom) {
+  for (const [id, cssVar] of Object.entries(colorIds)) {
+    if (savedCustom[cssVar]) document.getElementById(id).value = savedCustom[cssVar];
   }
 }
 
-let gridCol = '#eeeafc', axisCol = '#c8c4e8', curveCol = '#667eea', rootCol = '#e17055';
-let lastF = null, lastRoots = [];
+// кнопка «Применить»
+document.getElementById('applyColors').onclick = () => {
+  const custom = {};
+  for (const [id, cssVar] of Object.entries(colorIds)) {
+    const val = document.getElementById(id).value;
+    document.documentElement.style.setProperty(cssVar, val);
+    custom[cssVar] = val;
+  }
+  localStorage.setItem('solver-custom', JSON.stringify(custom));
+  // график тоже перекрашиваем в акцентный цвет
+  scheduleChartRedraw();
+};
 
-function redrawLast() {
-  if (lastF) drawPlot(lastF, lastRoots);
+// кнопка «Сбросить»
+document.getElementById('resetColors').onclick = () => {
+  clearCustomColors();
+  // возвращаем пикеры к значениям текущей темы
+  setTimeout(() => {
+    const m = getComputedStyle(document.documentElement);
+    document.getElementById('c-bg1').value = toHex(m.getPropertyValue('--bg-grad-1').trim()) || '#667eea';
+    document.getElementById('c-bg2').value = toHex(m.getPropertyValue('--bg-grad-2').trim()) || '#764ba2';
+    document.getElementById('c-acc').value = toHex(m.getPropertyValue('--accent').trim()) || '#667eea';
+    document.getElementById('c-btn1').value = document.getElementById('c-bg1').value;
+    document.getElementById('c-btn2').value = document.getElementById('c-bg2').value;
+  }, 60);
+};
+
+function clearCustomColors() {
+  for (const cssVar of Object.values(colorIds)) {
+    document.documentElement.style.removeProperty(cssVar);
+  }
+  localStorage.removeItem('solver-custom');
+  scheduleChartRedraw();
 }
 
-// ==================== ГРАФИК ====================
-function drawPlot(f, roots) {
-  lastF = f; lastRoots = roots;
-  // подхватываем цвета из текущей темы
-  const m = getComputedStyle(document.documentElement);
-  gridCol = m.getPropertyValue('--grid-line').trim();
-  axisCol = m.getPropertyValue('--axis-line').trim();
-  curveCol = m.getPropertyValue('--curve').trim();
-  rootCol = m.getPropertyValue('--root-dot').trim();
-
-  chart.style.display = 'block';
-  const dpr = window.devicePixelRatio || 1;
-  const cssW = chart.clientWidth || 500;
-  const cssH = 260;
-  chart.width = cssW * dpr;
-  chart.height = cssH * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const W = cssW, H = cssH;
-  ctx.clearRect(0, 0, W, H);
-
-  let cx = 0, span = 10;
-  if (roots.length) {
-    cx = roots.reduce((s, r) => s + r, 0) / roots.length;
-    const spread = Math.max(...roots.map(r => Math.abs(r - cx)));
-    span = Math.max(6, spread * 2.5 + 2, Math.abs(cx) * 0.6 + 3);
-  }
-
-  const toX = x => W / 2 + (x - cx) * (W / span) / 2;
-  let yMin = Infinity, yMax = -Infinity;
-  const N = 400;
-  for (let i = 0; i <= N; i++) {
-    const y = f(cx - span / 2 + span * i / N);
-    if (isFinite(y)) { yMin = Math.min(yMin, y); yMax = Math.max(yMax, y); }
-  }
-  if (!isFinite(yMin)) { yMin = -5; yMax = 5; }
-  yMin = Math.min(yMin, 0); yMax = Math.max(yMax, 0);
-  let ySpan = yMax - yMin || 1;
-  if (ySpan > span * 2) ySpan = span * 2;
-  const yMid = (yMin + yMax) / 2;
-  const toY = y => H / 2 - Math.max(-ySpan / 2, Math.min(ySpan / 2, y - yMid)) * (H - 30) / ySpan;
-
-  ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
-  for (let gx = 0; gx <= W; gx += W / 12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
-
-  ctx.strokeStyle = axisCol;
-  const y0 = toY(0), x0 = toX(0);
-  if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
-  if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
-
-  ctx.strokeStyle = curveCol; ctx.lineWidth = 3;
-  ctx.beginPath();
-  let started = false, prevY = null;
-  for (let i = 0; i <= N; i++) {
-    const x = cx - span / 2 + span * i / N;
-    const y = f(x);
-    if (!isFinite(y)) { started = false; prevY = null; continue; }
-    if (prevY !== null && Math.abs(y - prevY) > ySpan) started = false;
-    const py = toY(y);
-    if (py < -H || py > 2 * H) { started = false; prevY = y; continue; }
-    if (!started) { ctx.moveTo(toX(x), py); started = true; }
-    else ctx.lineTo(toX(x), py);
-    prevY = y;
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = rootCol;
-  roots.forEach(r => {
-    ctx.beginPath();
-    ctx.arc(toX(r), toY(0), 6, 0, Math.PI * 2);
-    ctx.fill();
-  });
-}
-</script>
-</body>
-</html>
+// rgba(...) из тем переводим в hex, чтобы пикер цвета не ругался
+function toHex(color) {
+  if (!color) return null;
+  if (color.startsWith('#')) return color;
+  const m = color.match(/rgba?
