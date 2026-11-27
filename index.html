@@ -6,29 +6,183 @@
 <meta name="theme-color" content="#667eea">
 <title>Решатель уравнений</title>
 <style>
+  :root {
+    --bg-grad-1: #667eea;
+    --bg-grad-2: #764ba2;
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --text-main: #2d2a4a;
+    --text-soft: #7a7699;
+    --accent: #667eea;
+    --accent-dark: #4a3f8f;
+    --input-border: #e0ddef;
+    --input-bg: #ffffff;
+    --result-bg: #f8f7ff;
+    --key-bg: #f0eefc;
+    --key-bg-active: #667eea;
+    --key-fn-bg: #e8f4fd;
+    --key-fn-text: #2b7bc0;
+    --key-del-bg: #fdecea;
+    --key-del-text: #d63031;
+    --err-bg: #fdecea;
+    --err-text: #d63031;
+    --grid-line: #eeeafc;
+    --axis-line: #c8c4e8;
+    --chart-bg: #fdfdff;
+    --curve: #667eea;
+    --root-dot: #e17055;
+    --divider: #d5d0f0;
+    --shadow: 0 20px 60px rgba(30, 20, 80, 0.35);
+    --glow: 0 0 30px rgba(102, 126, 234, 0.4);
+  }
+
+  [data-theme="dark"] {
+    --card-bg: rgba(30, 28, 52, 0.92);
+    --text-main: #eceaff;
+    --text-soft: #9a94c4;
+    --accent: #8b93ff;
+    --accent-dark: #b3b8ff;
+    --input-border: #3d3968;
+    --input-bg: #262347;
+    --result-bg: #262347;
+    --key-bg: #34305e;
+    --key-bg-active: #667eea;
+    --key-fn-bg: #2a3f5e;
+    --key-fn-text: #7fc3ff;
+    --key-del-bg: #4e2a35;
+    --key-del-text: #ff8a94;
+    --err-bg: #4e2a35;
+    --err-text: #ff8a94;
+    --grid-line: #2e2a52;
+    --axis-line: #4a4578;
+    --chart-bg: #221f40;
+    --curve: #8b93ff;
+    --root-dot: #ff8a5c;
+    --divider: #3d3968;
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    --glow: 0 0 40px rgba(102, 126, 234, 0.25);
+  }
+
+  [data-theme="midnight"] {
+    --bg-grad-1: #0f0c29;
+    --bg-grad-2: #302b63;
+    --card-bg: rgba(28, 25, 58, 0.85);
+    --text-main: #eae8ff;
+    --text-soft: #8f8ab8;
+    --accent: #a78bfa;
+    --accent-dark: #c4b5fd;
+    --input-border: #3f3a70;
+    --input-bg: #262250;
+    --result-bg: #262250;
+    --key-bg: #332e63;
+    --key-bg-active: #a78bfa;
+    --key-fn-bg: #2c3e63;
+    --key-fn-text: #7dd3fc;
+    --key-del-bg: #522a3e;
+    --key-del-text: #fb7185;
+    --err-bg: #522a3e;
+    --err-text: #fb7185;
+    --grid-line: #2d2856;
+    --axis-line: #4c468a;
+    --chart-bg: #211d48;
+    --curve: #a78bfa;
+    --root-dot: #fb923c;
+    --divider: #3f3a70;
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+    --glow: 0 0 45px rgba(167, 139, 250, 0.3);
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
     font-family: 'Segoe UI', sans-serif;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+    background-attachment: fixed;
+    transition: background 0.5s ease;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding: 16px;
+    color: var(--text-main);
+  }
+
+  /* Плавающие декоративные шарики на фоне */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+    animation: float 14s ease-in-out infinite alternate;
+  }
+  .blob-1 { width: 300px; height: 300px; background: rgba(255, 119, 198, 0.5); top: -80px; left: -80px; }
+  .blob-2 { width: 260px; height: 260px; background: rgba(56, 232, 234, 0.4); bottom: -60px; right: -60px; animation-delay: -7s; }
+
+  @keyframes float {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(40px, 30px) scale(1.15); }
   }
 
   .card {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
     max-width: 560px;
     width: 100%;
     padding: 22px 16px;
+    animation: appear 0.5s ease both;
+    transition: background 0.4s ease;
   }
 
-  h1 { text-align: center; color: #4a3f8f; font-size: 22px; margin-bottom: 4px; }
-  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 18px; }
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    color: var(--accent-dark);
+    font-size: 22px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Переключатель темы */
+  .theme-switch {
+    display: flex;
+    background: var(--key-bg);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .theme-btn {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    width: 34px;
+    height: 30px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.25s;
+    line-height: 1;
+  }
+  .theme-btn.active {
+    background: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .subtitle { text-align: center; color: var(--text-soft); font-size: 13px; margin-bottom: 18px; }
 
   .input-row { display: flex; gap: 8px; }
 
@@ -36,30 +190,38 @@
     flex: 1;
     min-width: 0;
     padding: 14px 12px;
-    border: 2px solid #e0ddef;
-    border-radius: 12px;
+    border: 2px solid var(--input-border);
+    border-radius: 14px;
+    background: var(--input-bg);
+    color: var(--text-main);
     font-size: 18px;
     font-family: 'Consolas', monospace;
     outline: none;
-    transition: 0.2s;
+    transition: 0.25s;
   }
-  #eq:focus { border-color: #667eea; }
+  #eq:focus {
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+  #eq::placeholder { color: var(--text-soft); }
 
   button.solve {
     padding: 14px 18px;
     border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
     color: white;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
     white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.45);
   }
+  button.solve:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(102, 126, 234, 0.55); }
   button.solve:active { transform: scale(0.97); }
 
-  /* Клавиатурка для ввода */
+  /* Клавиатурка */
   .keypad {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -67,8 +229,8 @@
     margin-top: 12px;
   }
   .key {
-    background: #f0eefc;
-    color: #4a3f8f;
+    background: var(--key-bg);
+    color: var(--accent-dark);
     border: none;
     border-radius: 10px;
     padding: 12px 0;
@@ -79,50 +241,95 @@
     transition: 0.15s;
     user-select: none;
   }
-  .key:active { background: #667eea; color: white; transform: scale(0.95); }
-  .key.fn { background: #e8f4fd; color: #2b7bc0; }
-  .key.del { background: #fdecea; color: #d63031; }
+  .key:active { background: var(--key-bg-active); color: white; transform: scale(0.93); }
+  .key.fn { background: var(--key-fn-bg); color: var(--key-fn-text); }
+  .key.del { background: var(--key-del-bg); color: var(--key-del-text); }
 
-  .examples { display: none; } /* на телефоне примеры уходят, клавиатурка важнее */
+  .examples { display: none; }
 
   @media (min-width: 600px) {
     .card { padding: 36px; }
     .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
     .ex {
-      background: #f0eefc; color: #667eea; border: none; border-radius: 20px;
-      padding: 6px 14px; font-size: 13px; font-family: 'Consolas', monospace;
-      cursor: pointer; transition: 0.2s;
+      background: var(--key-bg);
+      color: var(--accent);
+      border: 1px solid transparent;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: 'Consolas', monospace;
+      cursor: pointer;
+      transition: 0.2s;
     }
-    .ex:hover { background: #667eea; color: white; }
+    .ex:hover { background: var(--accent); color: white; transform: translateY(-2px); }
     .keypad { grid-template-columns: repeat(10, 1fr); }
     h1 { font-size: 26px; }
   }
 
   .error {
-    color: #d63031; margin-top: 14px; display: none; font-size: 14px;
-    background: #fdecea; border-radius: 10px; padding: 10px 14px;
+    color: var(--err-text);
+    background: var(--err-bg);
+    margin-top: 14px;
+    display: none;
+    font-size: 14px;
+    border-radius: 10px;
+    padding: 10px 14px;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
   }
 
   .result {
-    margin-top: 22px; background: #f8f7ff; border-radius: 12px; padding: 16px;
-    display: none; line-height: 1.7; color: #333; font-size: 15px;
+    margin-top: 22px;
+    background: var(--result-bg);
+    border-radius: 14px;
+    padding: 16px;
+    display: none;
+    line-height: 1.7;
+    color: var(--text-main);
+    font-size: 15px;
     overflow-x: auto;
+    animation: appear 0.35s ease both;
   }
   .result .steps div { margin: 4px 0; }
   .result .answer {
-    margin-top: 10px; padding-top: 10px; border-top: 1px dashed #d5d0f0;
-    font-size: 18px; font-weight: 700; color: #4a3f8f; word-break: break-word;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--divider);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--accent);
+    word-break: break-word;
   }
 
   canvas {
-    margin-top: 18px; width: 100%; height: 260px;
-    border-radius: 12px; background: #fdfdff; display: none;
+    margin-top: 18px;
+    width: 100%;
+    height: 260px;
+    border-radius: 14px;
+    background: var(--chart-bg);
+    display: none;
+    animation: appear 0.35s ease both;
   }
 </style>
 </head>
 <body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
   <div class="card">
-    <h1>🧮 Решатель уравнений</h1>
+    <div class="top-bar">
+      <h1>🧮 Решатель уравнений</h1>
+      <div class="theme-switch" id="themes">
+        <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
+        <button class="theme-btn" data-theme="dark" title="Тёмная">🌙</button>
+        <button class="theme-btn" data-theme="midnight" title="Полночная">🌌</button>
+      </div>
+    </div>
     <p class="subtitle">Напишите уравнение — сайт сам его разберёт и решит</p>
 
     <div class="input-row">
@@ -130,7 +337,7 @@
       <button class="solve" id="btn">Решить</button>
     </div>
 
-    <!-- Клавиатурка для телефона -->
+    <!-- Клавиатурка -->
     <div class="keypad" id="keypad">
       <button class="key" data-ins="7">7</button>
       <button class="key" data-ins="8">8</button>
@@ -503,7 +710,6 @@ btn.onclick = solve;
 eqInput.addEventListener('keydown', e => { if (e.key === 'Enter') solve(); });
 
 // Клавиатурка: вставка в позицию курсора
-const ins = { '>=': '=' };
 document.querySelectorAll('.key[data-ins]').forEach(k => {
   k.addEventListener('click', () => {
     const text = k.dataset.ins;
@@ -539,10 +745,58 @@ document.querySelectorAll('.ex').forEach(b => {
   b.onclick = () => { eqInput.value = b.textContent; solve(); };
 });
 
+// ==================== ПЕРЕКЛЮЧЕНИЕ ТЕМ ====================
+const themesBox = document.getElementById('themes');
+const savedTheme = localStorage.getItem('solver-theme');
+let currentTheme = savedTheme || 'light';
+applyTheme(currentTheme);
+
+themesBox.querySelectorAll('.theme-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    currentTheme = b.dataset.theme;
+    applyTheme(currentTheme);
+    localStorage.setItem('solver-theme', currentTheme);
+  });
+});
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  // при смене темы перекрашиваем график, если он открыт
+  themesBox.querySelectorAll('.theme-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.theme === t));
+  const card = document.querySelector('.card');
+  const wasVisible = chart.style.display === 'block';
+  if (wasVisible) {
+    // перерисовываем график через небольшой таймаут, чтобы CSS успел примениться
+    setTimeout(() => {
+      const m = getComputedStyle(document.documentElement);
+      gridCol = m.getPropertyValue('--grid-line').trim();
+      axisCol = m.getPropertyValue('--axis-line').trim();
+      curveCol = m.getPropertyValue('--curve').trim();
+      rootCol = m.getPropertyValue('--root-dot').trim();
+      redrawLast();
+    }, 50);
+  }
+}
+
+let gridCol = '#eeeafc', axisCol = '#c8c4e8', curveCol = '#667eea', rootCol = '#e17055';
+let lastF = null, lastRoots = [];
+
+function redrawLast() {
+  if (lastF) drawPlot(lastF, lastRoots);
+}
+
 // ==================== ГРАФИК ====================
 function drawPlot(f, roots) {
+  lastF = f; lastRoots = roots;
+  // подхватываем цвета из текущей темы
+  const m = getComputedStyle(document.documentElement);
+  gridCol = m.getPropertyValue('--grid-line').trim();
+  axisCol = m.getPropertyValue('--axis-line').trim();
+  curveCol = m.getPropertyValue('--curve').trim();
+  rootCol = m.getPropertyValue('--root-dot').trim();
+
   chart.style.display = 'block';
-  // на телефоне канвас растянут по ширине — пересчитываем пропорции
   const dpr = window.devicePixelRatio || 1;
   const cssW = chart.clientWidth || 500;
   const cssH = 260;
@@ -573,15 +827,15 @@ function drawPlot(f, roots) {
   const yMid = (yMin + yMax) / 2;
   const toY = y => H / 2 - Math.max(-ySpan / 2, Math.min(ySpan / 2, y - yMid)) * (H - 30) / ySpan;
 
-  ctx.strokeStyle = '#eeeafc'; ctx.lineWidth = 1;
+  ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
   for (let gx = 0; gx <= W; gx += W / 12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
 
-  ctx.strokeStyle = '#c8c4e8';
+  ctx.strokeStyle = axisCol;
   const y0 = toY(0), x0 = toX(0);
   if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
   if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
 
-  ctx.strokeStyle = '#667eea'; ctx.lineWidth = 3;
+  ctx.strokeStyle = curveCol; ctx.lineWidth = 3;
   ctx.beginPath();
   let started = false, prevY = null;
   for (let i = 0; i <= N; i++) {
@@ -597,7 +851,7 @@ function drawPlot(f, roots) {
   }
   ctx.stroke();
 
-  ctx.fillStyle = '#e17055';
+  ctx.fillStyle = rootCol;
   roots.forEach(r => {
     ctx.beginPath();
     ctx.arc(toX(r), toY(0), 6, 0, Math.PI * 2);
