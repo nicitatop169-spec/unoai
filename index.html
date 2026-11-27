@@ -1,247 +1,319 @@
-<div class="examples">
-        <span class="ex" data-eq="3x - 7 = 14">3x - 7 = 14</span>
-        <span class="ex" data-eq="5x + 2 = 3x + 10">5x + 2 = 3x + 10</span>
-        <span class="ex" data-eq="x^2 - 5x - 6 = 0">x² - 5x - 6 = 0</span>
-    </div>
-
-    <div id="resultBox" class="result-box"></div>
-</div>
-
-<script>
-    window.addEventListener('load', function() {
-        var input = document.getElementById('eqInput');
-        var resultBox = document.getElementById('resultBox');
-        var solveBtn = document.getElementById('solveBtn');
-        var resetBtn = document.getElementById('resetBtn');
-
-        function showError(msg) {
-            resultBox.className = 'result-box result-error';
-            resultBox.innerHTML = '⚠️ ' + msg;
-            resultBox.style.display = 'block';
-        }
-
-        function showSuccess(msg) {
-            resultBox.className = 'result-box result-success';
-            resultBox.innerHTML = '✅ ' + msg;
-            resultBox.style.display = 'block';
-        }
-
-        function insertText(text) {
-            if (typeof input.value !== 'string') input.value = '';
-            input.value += text;
-            input.focus();
-        }
-
-        document.getElementById('symX2').onclick = function() { insertText('^2'); };
-        document.getElementById('symX').onclick = function() { insertText('x'); };
-        document.getElementById('symPlus').onclick = function() { insertText('+'); };
-        document.getElementById('symMinus').onclick = function() { insertText('-'); };
-        document.getElementById('symEq').onclick = function() { insertText('='); };
-
-        resetBtn.onclick = function() {
-            input.value = '';
-            resultBox.style.display = 'none';
-            input.focus();
-        };
-
-        var examples = document.querySelectorAll('.ex');
-        for (var i = 0; i < examples.length; i++) {
-            examples[i].onclick = function() {
-                input.value = this.getAttribute('data-eq');
-                resultBox.style.display = 'none';
-            };
-        }
-
-        solveBtn.onclick = function() {
-            if (typeof input.value !== 'string') {
-                showError("Ошибка ввода данных.");
-                return;
-            }
-
-            var raw = input.value.trim();
-            if (raw === '') {
-                showError("Пожалуйста, введите уравнение.");
-                return;
-            }
-
-            var eq = raw.replace(/\s+/g, '').toLowerCase().replace(/²/g, '^2');
-
-            if (eq.indexOf('=') === -1) {
-                showError("В уравнении должен быть знак '='.");
-                return;
-            }
-
-            try {
-                var isQuadratic = eq.indexOf('x^2') !== -1;
-                
-                if (isQuadratic) {
-                    var res = solveQuadratic(eq);
-                    if (res.error) {
-                        showError(res.error);
-                    } else {
-                        showSuccess(res.text);
-                    }
-                } else {
-                    var x = solveLinear(eq);
-                    if (x === null) {
-                        showError("Не удалось распознать уравнение или нет решения.");
-                    } else if (typeof x === 'string') {
-                        showSuccess(x);
-                    } else {
-                        showSuccess("Корень уравнения: <b>x = " + x + "</b>");
-                    }
-                }
-            } catch (err) {
-                showError("Ошибка при обработке уравнения.");
-            }
-        };
-
-        function solveLinear(eq) {
-            var parts = eq.split('=');
-            if (parts.length !== 2) return null;
-
-            function parseSide(side) {
-                var a = 0, b = 0;
-                if (side[0] !== '+' && side[0] !== '-') side = '+' + side;
-                var terms = side.match(/[+-]?\d*\.?\d*x?/g);
-                if (!terms) return {a: 0, b: 0};
-                for (var i = 0; i < terms.length; i++) {
-                    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГДЗ: Супер-Решатель</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #4b0082, #8a2be2);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-        .card {
-            background-color: #fcfcfc;
-            border-radius: 20px;
-            padding: 30px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box;
-        }
-        .header h1 {
-            color: #d9534f;
-            font-size: 22px;
-            margin: 0 0 5px 0;
-            text-align: center;
-        }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            font-size: 13px;
-            margin-bottom: 25px;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        input[type="text"] {
-            flex-grow: 1;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        input[type="text"]:focus { border-color: #d9534f; }
-        .btn-solve {
-            background-color: #e07a72;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 0 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .btn-solve:hover { background-color: #d9534f; }
-        .symbols {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            align-items: center;
-        }
-        .symbols span {
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 5px;
-        }
-        .symbols span:hover { background: #eee; }
-        .reset {
-            color: #e07a72;
-            cursor: pointer;
-            font-size: 13px;
-            text-decoration: underline;
-            margin-left: auto;
-        }
-        .examples {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #777;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        .examples span { cursor: pointer; }
-        .examples span:hover { color: #333; }
-        .result-box {
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 15px;
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-            line-height: 1.4;
-        }
-        .result-success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-        }
-        .result-error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Решатель уравнений</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 16px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 520px;
+    width: 100%;
+    padding: 36px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #4a3f8f;
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #f0eefc;
+    color: #667eea;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .tab.active {
+    background: #667eea;
+    color: white;
+  }
+
+  .inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .coef {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .coef label {
+    font-weight: 700;
+    color: #4a3f8f;
+    font-size: 18px;
+  }
+
+  .coef input {
+    width: 90px;
+    padding: 10px;
+    border: 2px solid #e0ddef;
+    border-radius: 10px;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    transition: 0.2s;
+  }
+
+  .coef input:focus {
+    border-color: #667eea;
+  }
+
+  button.solve {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button.solve:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .result {
+    margin-top: 22px;
+    background: #f8f7ff;
+    border-radius: 12px;
+    padding: 18px;
+    display: none;
+    line-height: 1.6;
+    color: #333;
+    font-size: 15px;
+  }
+
+  .result .answer {
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #4a3f8f;
+  }
+
+  .error { color: #d63031; margin-top: 12px; display: none; font-size: 14px; }
+
+  canvas {
+    margin-top: 18px;
+    width: 100%;
+    border-radius: 12px;
+    background: #fdfdff;
+    display: none;
+  }
+</style>
 </head>
 <body>
+  <div class="card">
+    <h1>🧮 Решатель уравнений</h1>
+    <p class="subtitle">Квадратные и линейные — с подробным решением</p>
 
-<div class="card">
-    <div class="header">
-        <h1>✤ ГДЗ: Супер-Решатель</h1>
-    </div>
-    <div class="subtitle">Введи линейное или квадратное уравнение</div>
-
-    <div class="input-group">
-        <input type="text" id="eqInput" placeholder="Пример: 2x + 5 = 15" value="x^2 - 5x - 6 = 0">
-        <button class="btn-solve" id="solveBtn">Решить</button>
+    <div class="tabs">
+      <button class="tab active" id="tab-quad">ax² + bx + c = 0</button>
+      <button class="tab" id="tab-lin">ax + b = 0</button>
     </div>
 
-    <div class="symbols">
-        <span id="symX2">x²</span>
-        <span id="symX">x</span>
-        <span id="symPlus">+</span>
-        <span id="symMinus">-</span>
-        <span id="symEq">=</span>
-        <div class="reset" id="resetBtn">Сброс</div>
+    <div class="inputs">
+      <div class="coef"><label for="a">a</label><input type="number" id="a" step="any" value="1"></div>
+      <div class="coef" id="wrap-b"><label for="b">b</label><input type="number" id="b" step="any" value="0"></div>
+      <div class="coef" id="wrap-c"><label for="c">c</label><input type="number" id="c" step="any" value="0"></div>
     </div>
+
+    <button class="solve" id="btn">Решить</button>
+
+    <div class="error" id="err">Введите числа во все поля!</div>
+
+    <div class="result" id="result"></div>
+    <canvas id="chart" width="500" height="300"></canvas>
+  </div>
+
+<script>
+  const quadTab = document.getElementById('tab-quad');
+  const linTab = document.getElementById('tab-lin');
+  const wrapB = document.getElementById('wrap-b');
+  const wrapC = document.getElementById('wrap-c');
+  const btn = document.getElementById('btn');
+  const result = document.getElementById('result');
+  const err = document.getElementById('err');
+  const chart = document.getElementById('chart');
+  const ctx = chart.getContext('2d');
+
+  let mode = 'quad';
+
+  quadTab.onclick = () => setMode('quad');
+  linTab.onclick = () => setMode('lin');
+
+  function setMode(m) {
+    mode = m;
+    quadTab.classList.toggle('active', m === 'quad');
+    linTab.classList.toggle('active', m === 'lin');
+    wrapB.style.display = m === 'lin' ? 'none' : '';
+    wrapC.style.display = m === 'lin' ? 'none' : '';
+    result.style.display = 'none';
+    chart.style.display = 'none';
+  }
+
+  btn.onclick = () => {
+    err.style.display = 'none';
+    const a = parseFloat(document.getElementById('a').value);
+    const b = parseFloat(document.getElementById('b').value);
+    const c = parseFloat(document.getElementById('c').value);
+
+    if (isNaN(a) || (mode === 'quad' && (isNaN(b) || isNaN(c)))) {
+      err.style.display = 'block';
+      return;
+    }
+
+    if (mode === 'lin') {
+      solveLinear(a, b);
+    } else {
+      solveQuadratic(a, b, c);
+    }
+  };
+
+  function show(html) {
+    result.innerHTML = html;
+    result.style.display = 'block';
+  }
+
+  function fmt(x) {
+    if (Number.isInteger(x)) return x.toString();
+    return x.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+  }
+
+  function solveLinear(a, b) {
+    if (a === 0) {
+      show(b === 0
+        ? '<div class="answer">Уравнение имеет бесконечно много решений (0 = 0)</div>'
+        : '<div class="answer">Уравнение не имеет решений</div>');
+      return;
+    }
+    const x = -b / a;
+    show(`<div><strong>Шаг 1:</strong> x = −b / a = ${fmt(-b)} / ${fmt(a)}</div>
+          <div class="answer">x = ${fmt(x)}</div>`);
+  }
+
+  function solveQuadratic(a, b, c) {
+    if (a === 0) {
+      solveLinear(b, c); // уравнение вырождается в bx + c = 0
+      return;
+    }
+
+    const D = b * b - 4 * a * c;
+    let html = `<div>Уравнение: <strong>${fmt(a)}x² + ${fmt(b)}x + ${fmt(c)} = 0</strong></div>
+                <div><strong>Дискриминант:</strong> D = b² − 4ac = ${fmt(b*b)} − ${fmt(4*a*c)} = <strong>${fmt(D)}</strong></div>`;
+
+    if (D > 0) {
+      const x1 = (-b + Math.sqrt(D)) / (2 * a);
+      const x2 = (-b - Math.sqrt(D)) / (2 * a);
+      html += `<div>D &gt; 0 — два различных корня</div>
+               <div>x₁ = (−b + √D) / 2a = ${fmt(x1)}</div>
+               <div>x₂ = (−b − √D) / 2a = ${fmt(x2)}</div>
+               <div class="answer">Ответ: x₁ = ${fmt(x1)}, x₂ = ${fmt(x2)}</div>`;
+    } else if (D === 0) {
+      const x = -b / (2 * a);
+      html += `<div>D = 0 — один корень</div>
+               <div>x = −b / 2a = ${fmt(x)}</div>
+               <div class="answer">Ответ: x = ${fmt(x)}</div>`;
+    } else {
+      const re = -b / (2 * a);
+      const im = Math.sqrt(-D) / (2 * a);
+      html += `<div>D &lt; 0 — действительных корней нет</div>
+               <div>Корни комплексные: x = ${fmt(re)} ± ${fmt(Math.abs(im))}i</div>
+               <div class="answer">Ответ: x = ${fmt(re)} ± ${fmt(Math.abs(im))}i</div>`;
+    }
+
+    show(html);
+    drawParabola(a, b, c);
+  }
+
+  function drawParabola(a, b, c) {
+    chart.style.display = 'block';
+    const W = chart.width, H = chart.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // диапазон по x: вокруг вершины или корней
+    let cx = -b / (2 * a);
+    let span = Math.max(4, Math.abs(cx) * 0.5 + 2);
+
+    // масштаб, чтобы парабола помещалась
+    const toX = x => W/2 + (x - cx) * (W / span) / 2;
+    const ymin = [], ymax = [];
+    let yMinVal = Infinity, yMaxVal = -Infinity;
+    for (let i = 0; i <= 200; i++) {
+      const x = cx - span/2 + span * i / 200;
+      const y = a*x*x + b*x + c;
+      yMinVal = Math.min(yMinVal, y);
+      yMaxVal = Math.max(yMaxVal, y);
+    }
+    // включаем 0 в диапазон по y
+    yMinVal = Math.min(yMinVal, 0);
+    yMaxVal = Math.max(yMaxVal, 0);
+    const ySpan = yMaxVal - yMinVal || 1;
+    const toY = y => H - 20 - (y - yMinVal) * (H - 40) / ySpan;
+
+    // оси
+    ctx.strokeStyle = '#c8c4e8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const y0 = toY(0), x0 = toX(0);
+    if (y0 >= 0 && y0 <= H) { ctx.moveTo(0, y0); ctx.lineTo(W, y0); }
+    if (x0 >= 0 && x0 <= W) { ctx.moveTo(x0, 0); ctx.lineTo(x0, H); }
+    ctx.stroke();
+
+    // парабола
+    ctx.strokeStyle = '#667eea';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i <= 200; i++) {
+      const x = cx - span/2 + span * i / 200;
+      const y = a*x*x + b*x + c;
+      if (i === 0) ctx.moveTo(toX(x), toY(y));
+      else ctx.lineTo(toX(x), toY(y));
+    }
+    ctx.stroke();
+  }
+</script>
+</body>
+</html>
