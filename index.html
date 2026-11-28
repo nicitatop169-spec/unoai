@@ -24,13 +24,11 @@ h1{color:var(--accent-dark);font-size:22px;letter-spacing:.3px}
 .theme-btn,.custom-btn{border:none;background:transparent;border-radius:999px;width:34px;height:30px;font-size:15px;cursor:pointer;transition:.25s;line-height:1}
 .theme-btn.active,.custom-btn.active{background:var(--accent);box-shadow:var(--glow)}
 .custom-btn{background:var(--key-bg)}
-/* ===== Кнопка-меню справа (3 полоски) ===== */
 .menu-btn{border:none;background:var(--key-bg);border-radius:10px;width:40px;height:32px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;transition:.2s;flex-shrink:0}
 .menu-btn span{display:block;width:18px;height:2px;background:var(--accent-dark);border-radius:2px;transition:.25s}
 .menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .menu-btn.active span:nth-child(2){opacity:0}
 .menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-/* ===== Выпадающее меню ===== */
 .menu{position:absolute;top:52px;right:0;min-width:250px;background:var(--card-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.25);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;z-index:70;animation:appear .25s ease both}
 .menu.open{display:block}
 .menu-item{display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;color:var(--text-main);font-size:15px;font-weight:600;text-align:left;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
@@ -67,7 +65,6 @@ button.solve:active{transform:scale(.97)}
 .result .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--divider);font-size:19px;font-weight:700;color:var(--accent);word-break:break-word}
 canvas{margin-top:18px;width:100%;height:260px;border-radius:14px;background:var(--chart-bg);display:none;animation:appear .35s ease both}
 .footer{margin-top:20px;text-align:center;font-size:12px;color:var(--text-soft)}
-/* ===== Модальные окна ===== */
 .overlay{position:fixed;inset:0;background:rgba(15,12,41,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;justify-content:center;align-items:center;z-index:100;padding:14px}
 .overlay.open{display:flex}
 .modal{background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.25);border-radius:20px;box-shadow:var(--shadow);width:100%;max-width:400px;padding:16px;animation:appear .3s ease both;max-height:92vh;overflow-y:auto}
@@ -102,10 +99,8 @@ canvas{margin-top:18px;width:100%;height:260px;border-radius:14px;background:var
           <button class="theme-btn" data-theme="dark">🌙</button>
           <button class="theme-btn" data-theme="midnight">🌌</button>
         </div>
-        <!-- Кнопка-меню: 3 полоски, справа -->
         <button class="menu-btn" id="menuBtn" title="Меню"><span></span><span></span><span></span></button>
       </div>
-      <!-- Выпадающее меню -->
       <div class="menu" id="menu">
         <button class="menu-item" data-open="calc"><span class="ico">🖩</span>Калькулятор</button>
         <button class="menu-item" data-open="allator"><span class="ico">🧮</span>Allator (решатель уравнений)</button>
@@ -132,7 +127,7 @@ canvas{margin-top:18px;width:100%;height:260px;border-radius:14px;background:var
       <button class="key" data-ins="7">7</button><button class="key" data-ins="8">8</button><button class="key" data-ins="9">9</button><button class="key" data-ins="/">÷</button><button class="key" data-ins="(">(</button><button class="key del" data-del="1">⌫</button>
       <button class="key" data-ins="4">4</button><button class="key" data-ins="5">5</button><button class="key" data-ins="6">6</button><button class="key" data-ins="*">×</button><button class="key" data-ins=")">)</button><button class="key" data-ins="=">=</button>
       <button class="key" data-ins="1">1</button><button class="key" data-ins="2">2</button><button class="key" data-ins="3">3</button><button class="key" data-ins="-">−</button><button class="key" data-ins="^">x^</button><button class="key" data-ins="x">x</button>
-      <button class="key" data-ins="0">0</button><button class="key" data-ins=".">,</button><button class="key" data-ins="+">+</button><button class="key fn" data-ins="sqrt(">√</button><button class="key fn" data-ins="sin(">sin</button><button class="key fn" data-ins="cos(">cos</button>
+      <button class="key" data-ins="0">0</button><button class="key" data-ins=".">,</button><button class="key" data-ins="+">+</button><button class="key fn" data-ins="√(">√</button><button class="key fn" data-ins="sin(">sin</button><button class="key fn" data-ins="cos(">cos</button>
       <button class="key fn" data-ins="tan(">tg</button><button class="key fn" data-ins="pi">π</button><button class="key fn" data-ins="ln(">ln</button><button class="key fn" data-ins="log(">log</button><button class="key fn" data-ins="abs(">|a|</button><button class="key fn" data-clear="1">Очистить</button>
     </div>
 
@@ -178,7 +173,6 @@ canvas{margin-top:18px;width:100%;height:260px;border-radius:14px;background:var
   </div>
 
 <script>
-// ==================== ПАРСЕР ====================
 function tokenize(s){
   s=s.replace(/√/g,'sqrt').replace(/·|×/g,'*').replace(/−/g,'-').replace(/,/g,'.').replace(/π/g,'pi');
   const t=[];let i=0;
@@ -289,7 +283,6 @@ function findRoots(f){
   }
   return roots;
 }
-// ==================== РЕШАТЕЛЬ (ALLATOR) ====================
 const eqInput=document.getElementById('eq');
 const btn=document.getElementById('btn');
 const result=document.getElementById('result');
@@ -355,7 +348,6 @@ document.querySelector('.key[data-del]').addEventListener('click',()=>{
 });
 document.querySelector('.key[data-clear]').addEventListener('click',()=>{eqInput.value='';eqInput.focus()});
 document.querySelectorAll('.ex').forEach(b=>{b.onclick=()=>{eqInput.value=b.textContent;solve()}});
-// ==================== МЕНЮ ====================
 const menuBtn=document.getElementById('menuBtn');
 const menu=document.getElementById('menu');
 menuBtn.addEventListener('click',e=>{
@@ -369,7 +361,6 @@ document.addEventListener('click',e=>{
     menuBtn.classList.remove('active');
   }
 });
-// обработчики пунктов меню
 document.querySelectorAll('.menu-item[data-open]').forEach(item=>{
   item.addEventListener('click',()=>{
     const what=item.dataset.open;
@@ -378,14 +369,12 @@ document.querySelectorAll('.menu-item[data-open]').forEach(item=>{
     if(what==='calc'){calcOverlay.classList.add('open');calcDisplay.focus()}
     else if(what==='chem'){chemOverlay.classList.add('open');chemInput.focus()}
     else if(what==='allator'){
-      // Allator — главная страница: просто закрываем все окна
       calcOverlay.classList.remove('open');
       chemOverlay.classList.remove('open');
       window.scrollTo({top:0,behavior:'smooth'});
     }
   });
 });
-// ==================== ТЕМЫ И ЦВЕТА ====================
 const themesBox=document.getElementById('themes');
 const customBtn=document.getElementById('customBtn');
 const panel=document.getElementById('panel');
@@ -449,7 +438,6 @@ themesBox.querySelectorAll('.theme-btn').forEach(b=>{
     document.getElementById('resetColors').onclick();
   });
 });
-// ==================== КАЛЬКУЛЯТОР ====================
 const calcOverlay=document.getElementById('calcOverlay');
 const calcClose=document.getElementById('calcClose');
 const calcDisplay=document.getElementById('calcDisplay');
@@ -480,7 +468,7 @@ function calcCompute(){
   const raw=calcDisplay.value.trim();if(!raw)return;
   try{
     const node=parse(tokenize(raw));
-    const val=evalNode(node,lastAns); // x в калькуляторе = Ans
+    const val=evalNode(node,lastAns);
     if(isNaN(val))throw new Error('не определено');
     if(!isFinite(val))throw new Error('слишком большое число');
     calcPrev.textContent=raw+' =';
@@ -490,7 +478,6 @@ function calcCompute(){
 }
 document.querySelector('.ckey[data-ceq]').addEventListener('click',calcCompute);
 calcDisplay.addEventListener('keydown',e=>{if(e.key==='Enter')calcCompute()});
-// ==================== ХИМИЧЕСКИЙ КАЛЬКУЛЯТОР ====================
 const ATOMS={H:1.008,He:4.003,Li:6.94,Be:9.012,B:10.81,C:12.011,N:14.007,O:15.999,F:18.998,Ne:20.180,
 Na:22.990,Mg:24.305,Al:26.982,Si:28.085,P:30.974,S:32.06,Cl:35.45,Ar:39.948,K:39.098,Ca:40.078,
 Sc:44.956,Ti:47.867,V:50.942,Cr:51.996,Mn:54.938,Fe:55.845,Co:58.933,Ni:58.693,Cu:63.546,Zn:65.38,
@@ -530,10 +517,9 @@ function parseFormula(f){
       if(f[i]==='('){
         i++;
         let inner=0;
-        // рекурсивно считаем содержимое скобок
         while(i<f.length&&f[i]!==')')inner+=element();
         if(i>=f.length)throw new Error('не закрыта скобка');
-        i++; // съедаем )
+        i++;
         let mult=1;
         if(i<f.length&&/[0-9]/.test(f[i])){
           let num='';
@@ -576,7 +562,6 @@ function chemCalc(){
 }
 chemInput.addEventListener('keydown',e=>{if(e.key==='Enter')chemCalc()});
 chemInput.addEventListener('input',chemCalc);
-// ==================== ГРАФИК ====================
 let gridCol='#eeeafc',axisCol='#c8c4e8',curveCol='#667eea',rootCol='#e17055';
 let lastF=null,lastRoots=[];
 function scheduleChartRedraw(){if(lastF)setTimeout(()=>drawPlot(lastF,lastRoots),60)}
