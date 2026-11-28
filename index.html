@@ -29,8 +29,9 @@ h1{color:var(--accent-dark);font-size:22px;letter-spacing:.3px}
 .menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .menu-btn.active span:nth-child(2){opacity:0}
 .menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-.menu{position:absolute;top:52px;right:0;min-width:250px;background:var(--card-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.25);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;z-index:70;animation:appear .25s ease both}
+.menu{position:absolute;top:52px;right:0;min-width:270px;background:var(--card-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.25);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;z-index:70;animation:appear .25s ease both}
 .menu.open{display:block}
+.menu-label{font-size:11px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;padding:8px 10px 4px}
 .menu-item{display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;color:var(--text-main);font-size:15px;font-weight:600;text-align:left;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
 .menu-item:hover{background:var(--key-bg)}
 .menu-item .ico{font-size:18px;width:26px;text-align:center;flex-shrink:0}
@@ -131,6 +132,9 @@ button.solve:active,.menu-item:active,.menu-btn:active,
         <button class="menu-item" data-open="allator"><span class="ico">🧮</span>Allator (решатель уравнений)</button>
         <div class="menu-sep"></div>
         <button class="menu-item" data-open="chem"><span class="ico">⚗️</span>Химический калькулятор</button>
+        <div class="menu-sep"></div>
+        <div class="menu-label">Настройки</div>
+        <button class="menu-item" data-open="ai"><span class="ico">🤖</span>Спросить у ИИ-ассистента</button>
       </div>
     </div>
     <p class="subtitle">Напишите уравнение — Allator сам его разберёт и решит</p>
@@ -151,9 +155,9 @@ button.solve:active,.menu-item:active,.menu-btn:active,
     <div class="keypad">
       <button class="key" data-ins="7">7</button><button class="key" data-ins="8">8</button><button class="key" data-ins="9">9</button><button class="key" data-ins="÷">÷</button><button class="key" data-ins="(">(</button><button class="key del" data-del="1">⌫</button>
       <button class="key" data-ins="4">4</button><button class="key" data-ins="5">5</button><button class="key" data-ins="6">6</button><button class="key" data-ins="×">×</button><button class="key" data-ins=")">)</button><button class="key" data-ins="=">=</button>
-      <button class="key" data-ins="1">1</button><button class="key" data-ins="2">2</button><button class="key" data-ins="3">3</button><button class="key" data-ins="-">−</button><button class="key" data-ins="^">x^</button><button class="key" data-ins="x">x</button>
+      <button class="key" data-ins="1">1</button><button class="key" data-ins="2">2</button><button class="key" data-ins="3">3</button><button class="key" data-ins="−">−</button><button class="key" data-ins="x^">x^</button><button class="key" data-ins="x">x</button>
       <button class="key" data-ins="0">0</button><button class="key" data-ins=",">,</button><button class="key" data-ins="+">+</button><button class="key fn" data-ins="√(">√</button><button class="key fn" data-ins="sin(">sin</button><button class="key fn" data-ins="cos(">cos</button>
-      <button class="key fn" data-ins="tan(">tg</button><button class="key fn" data-ins="π">π</button><button class="key fn" data-ins="ln(">ln</button><button class="key fn" data-ins="log(">log</button><button class="key fn" data-ins="abs(">|a|</button><button class="key fn" data-clear="1">Очистить</button>
+      <button class="key fn" data-ins="tg(">tg</button><button class="key fn" data-ins="π">π</button><button class="key fn" data-ins="ln(">ln</button><button class="key fn" data-ins="log(">log</button><button class="key fn" data-ins="abs(">|a|</button><button class="key fn" data-clear="1">Очистить</button>
     </div>
 
     <div class="examples">
@@ -175,13 +179,13 @@ button.solve:active,.menu-item:active,.menu-btn:active,
       <div class="calc-prev" id="calcPrev"></div>
       <div class="calc-grid">
         <button class="ckey clr" data-cins="C">C</button><button class="ckey" data-cins="(">(</button><button class="ckey" data-cins=")">)</button><button class="ckey" data-cins="%">%</button><button class="ckey op" data-cdel="1">⌫</button>
-        <button class="ckey op" data-cins="sin(">sin</button><button class="ckey op" data-cins="cos(">cos</button><button class="ckey op" data-cins="tan(">tan</button><button class="ckey op" data-cins="pi">π</button><button class="ckey op" data-cins="^">x^y</button>
-        <button class="ckey op" data-cins="asin(">sin⁻¹</button><button class="ckey op" data-cins="acos(">cos⁻¹</button><button class="ckey op" data-cins="atan(">tan⁻¹</button><button class="ckey op" data-cins="e">e</button><button class="ckey op" data-cins="!">n!</button>
-        <button class="ckey op" data-cins="√(">√</button><button class="ckey op" data-cins="^2">x²</button><button class="ckey op" data-cins="ln(">ln</button><button class="ckey op" data-cins="log(">log</button><button class="ckey op" data-cins="exp(">e^x</button>
+        <button class="ckey op" data-cins="sin(">sin</button><button class="ckey op" data-cins="cos(">cos</button><button class="ckey op" data-cins="tg(">tg</button><button class="ckey op" data-cins="π">π</button><button class="ckey op" data-cins="^">^</button>
+        <button class="ckey op" data-cins="sin⁻¹(">sin⁻¹</button><button class="ckey op" data-cins="cos⁻¹(">cos⁻¹</button><button class="ckey op" data-cins="tan⁻¹(">tan⁻¹</button><button class="ckey op" data-cins="e">e</button><button class="ckey op" data-cins="!">n!</button>
+        <button class="ckey op" data-cins="√(">√</button><button class="ckey op" data-cins="x²">x²</button><button class="ckey op" data-cins="ln(">ln</button><button class="ckey op" data-cins="log(">log</button><button class="ckey op" data-cins="e^(">e^x</button>
         <button class="ckey" data-cins="7">7</button><button class="ckey" data-cins="8">8</button><button class="ckey" data-cins="9">9</button><button class="ckey op" data-cins="÷">÷</button><button class="ckey op" data-cins="abs(">|a|</button>
-        <button class="ckey" data-cins="4">4</button><button class="ckey" data-cins="5">5</button><button class="ckey" data-cins="6">6</button><button class="ckey op" data-cins="×">×</button><button class="ckey op" data-cins="x">Ans</button>
-        <button class="ckey" data-cins="1">1</button><button class="ckey" data-cins="2">2</button><button class="ckey" data-cins="3">3</button><button class="ckey op" data-cins="-">−</button><button class="ckey op" data-cins="sinh(">sh</button>
-        <button class="ckey" data-cins="0">0</button><button class="ckey" data-cins=".">,</button><button class="ckey op" data-cins="+">+</button><button class="ckey eq" data-ceq="1">=</button>
+        <button class="ckey" data-cins="4">4</button><button class="ckey" data-cins="5">5</button><button class="ckey" data-cins="6">6</button><button class="ckey op" data-cins="×">×</button><button class="ckey op" data-cins="Ans">Ans</button>
+        <button class="ckey" data-cins="1">1</button><button class="ckey" data-cins="2">2</button><button class="ckey" data-cins="3">3</button><button class="ckey op" data-cins="−">−</button><button class="ckey op" data-cins="sinh(">sh</button>
+        <button class="ckey" data-cins="0">0</button><button class="ckey" data-cins=",">,</button><button class="ckey op" data-cins="+">+</button><button class="ckey eq" data-ceq="1">=</button>
       </div>
     </div>
   </div>
@@ -199,7 +203,17 @@ button.solve:active,.menu-item:active,.menu-btn:active,
 
 <script>
 function tokenize(s){
-  s=s.replace(/√/g,'sqrt').replace(/·|×/g,'*').replace(/−/g,'-').replace(/,/g,'.').replace(/π/g,'pi');
+  s=s.replace(/√/g,'sqrt')
+     .replace(/·|×/g,'*')
+     .replace(/÷/g,'/')
+     .replace(/−/g,'-')
+     .replace(/,/g,'.')
+     .replace(/π/g,'pi')
+     .replace(/sin⁻¹/g,'asin')
+     .replace(/cos⁻¹/g,'acos')
+     .replace(/tan⁻¹/g,'atan')
+     .replace(/²/g,'^2')
+     .replace(/³/g,'^3');
   const t=[];let i=0;
   while(i<s.length){
     const c=s[i];
@@ -233,7 +247,7 @@ function parse(tokens){
     if(p.t==='num')return{t:'num',v:p.v};
     if(p.t==='('){const inner=parseExpr();if(!peek()||peek().t!==')')throw new Error('не закрыта скобка');next();return inner}
     if(p.t==='id'){
-      if(p.v==='x')return{t:'x'};
+      if(p.v==='x'||p.v==='ans')return{t:'x'};
       if(CONSTS[p.v]!==undefined)return{t:'num',v:CONSTS[p.v]};
       if(FUNCS.includes(p.v)){let arg;
         if(peek()&&peek().t==='('){next();arg=parseExpr();if(!peek()||peek().t!==')')throw new Error('не закрыта скобка');next()}
@@ -393,6 +407,9 @@ document.querySelectorAll('.menu-item[data-open]').forEach(item=>{
     menuBtn.classList.remove('active');
     if(what==='calc'){calcOverlay.classList.add('open');calcDisplay.focus()}
     else if(what==='chem'){chemOverlay.classList.add('open');chemInput.focus()}
+    else if(what==='ai'){
+      window.open('https://alice.yandex.ru/','_blank');
+    }
     else if(what==='allator'){
       calcOverlay.classList.remove('open');
       chemOverlay.classList.remove('open');
