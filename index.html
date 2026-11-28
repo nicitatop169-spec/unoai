@@ -4,476 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#667eea">
-<title>Решатель уравнений + Калькулятор</title>
+<title>Allator — решатель уравнений</title>
 <style>
-  :root {
-    --bg-grad-1: #667eea;
-    --bg-grad-2: #764ba2;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --text-main: #2d2a4a;
-    --text-soft: #7a7699;
-    --accent: #667eea;
-    --accent-dark: #4a3f8f;
-    --input-border: #e0ddef;
-    --input-bg: #ffffff;
-    --result-bg: #f8f7ff;
-    --key-bg: #f0eefc;
-    --key-bg-active: #667eea;
-    --key-fn-bg: #e8f4fd;
-    --key-fn-text: #2b7bc0;
-    --key-del-bg: #fdecea;
-    --key-del-text: #d63031;
-    --err-bg: #fdecea;
-    --err-text: #d63031;
-    --grid-line: #eeeafc;
-    --axis-line: #c8c4e8;
-    --chart-bg: #fdfdff;
-    --root-dot: #e17055;
-    --divider: #d5d0f0;
-    --shadow: 0 20px 60px rgba(30, 20, 80, 0.35);
-    --glow: 0 0 30px rgba(102, 126, 234, 0.4);
-  }
-
-  [data-theme="dark"] {
-    --card-bg: rgba(30, 28, 52, 0.92);
-    --text-main: #eceaff;
-    --text-soft: #9a94c4;
-    --accent: #8b93ff;
-    --accent-dark: #b3b8ff;
-    --input-border: #3d3968;
-    --input-bg: #262347;
-    --result-bg: #262347;
-    --key-bg: #34305e;
-    --key-bg-active: #667eea;
-    --key-fn-bg: #2a3f5e;
-    --key-fn-text: #7fc3ff;
-    --key-del-bg: #4e2a35;
-    --key-del-text: #ff8a94;
-    --err-bg: #4e2a35;
-    --err-text: #ff8a94;
-    --grid-line: #2e2a52;
-    --axis-line: #4a4578;
-    --chart-bg: #221f40;
-    --root-dot: #ff8a5c;
-    --divider: #3d3968;
-    --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-    --glow: 0 0 40px rgba(102, 126, 234, 0.25);
-  }
-
-  [data-theme="midnight"] {
-    --bg-grad-1: #0f0c29;
-    --bg-grad-2: #302b63;
-    --card-bg: rgba(28, 25, 58, 0.85);
-    --text-main: #eae8ff;
-    --text-soft: #8f8ab8;
-    --accent: #a78bfa;
-    --accent-dark: #c4b5fd;
-    --input-border: #3f3a70;
-    --input-bg: #262250;
-    --result-bg: #262250;
-    --key-bg: #332e63;
-    --key-bg-active: #a78bfa;
-    --key-fn-bg: #2c3e63;
-    --key-fn-text: #7dd3fc;
-    --key-del-bg: #522a3e;
-    --key-del-text: #fb7185;
-    --err-bg: #522a3e;
-    --err-text: #fb7185;
-    --grid-line: #2d2856;
-    --axis-line: #4c468a;
-    --chart-bg: #211d48;
-    --root-dot: #fb923c;
-    --divider: #3f3a70;
-    --shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
-    --glow: 0 0 45px rgba(167, 139, 250, 0.3);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
-    background-attachment: fixed;
-    transition: background 0.5s ease;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 16px;
-    color: var(--text-main);
-  }
-
-  .blob {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.45;
-    pointer-events: none;
-    z-index: 0;
-    animation: float 14s ease-in-out infinite alternate;
-  }
-  .blob-1 { width: 300px; height: 300px; background: rgba(255, 119, 198, 0.5); top: -80px; left: -80px; }
-  .blob-2 { width: 260px; height: 260px; background: rgba(56, 232, 234, 0.4); bottom: -60px; right: -60px; animation-delay: -7s; }
-
-  @keyframes float {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(40px, 30px) scale(1.15); }
-  }
-
-  .card {
-    position: relative;
-    z-index: 1;
-    background: var(--card-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 24px;
-    box-shadow: var(--shadow);
-    max-width: 560px;
-    width: 100%;
-    padding: 22px 16px;
-    animation: appear 0.5s ease both;
-    transition: background 0.4s ease;
-  }
-
-  @keyframes appear {
-    from { opacity: 0; transform: translateY(24px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  h1 { color: var(--accent-dark); font-size: 22px; letter-spacing: 0.3px; }
-
-  .top-controls { display: flex; gap: 6px; align-items: center; }
-
-  .theme-switch {
-    display: flex;
-    background: var(--key-bg);
-    border-radius: 999px;
-    padding: 3px;
-    gap: 2px;
-  }
-  .theme-btn, .custom-btn, .calc-btn {
-    border: none;
-    background: transparent;
-    border-radius: 999px;
-    width: 34px;
-    height: 30px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.25s;
-    line-height: 1;
-  }
-  .theme-btn.active, .custom-btn.active, .calc-btn.active {
-    background: var(--accent);
-    box-shadow: var(--glow);
-  }
-  .custom-btn, .calc-btn { background: var(--key-bg); }
-
-  .panel {
-    display: none;
-    background: var(--result-bg);
-    border-radius: 14px;
-    padding: 14px;
-    margin-top: 12px;
-    animation: appear 0.3s ease both;
-  }
-  .panel.open { display: block; }
-
-  .panel-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 6px 0 10px;
-  }
-  .panel-title:first-child { margin-top: 0; }
-
-  .swatches {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-  .swatch {
-    height: 44px;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: 0.2s;
-    padding: 0;
-    font-size: 9px;
-    color: white;
-    font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 4px;
-  }
-  .swatch:hover { transform: scale(1.1); }
-  .swatch.active { border-color: var(--text-main); box-shadow: var(--glow); }
-
-  .panel-actions { display: flex; gap: 8px; }
-  .panel-actions button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .btn-reset { background: var(--key-bg); color: var(--text-soft); }
-  .panel-actions button:active { transform: scale(0.97); }
-
-  .subtitle { text-align: center; color: var(--text-soft); font-size: 13px; margin-bottom: 18px; }
-
-  .input-row { display: flex; gap: 8px; }
-
-  #eq {
-    flex: 1;
-    min-width: 0;
-    padding: 14px 12px;
-    border: 2px solid var(--input-border);
-    border-radius: 14px;
-    background: var(--input-bg);
-    color: var(--text-main);
-    font-size: 18px;
-    font-family: 'Consolas', monospace;
-    outline: none;
-    transition: 0.25s;
-  }
-  #eq:focus { border-color: var(--accent); box-shadow: var(--glow); }
-  #eq::placeholder { color: var(--text-soft); }
-
-  button.solve {
-    padding: 14px 18px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--btn-grad-1, #667eea), var(--btn-grad-2, #764ba2));
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
-    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.45);
-  }
-  button.solve:hover { transform: translateY(-2px); }
-  button.solve:active { transform: scale(0.97); }
-
-  .keypad {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
-    margin-top: 12px;
-  }
-  .key {
-    background: var(--key-bg);
-    color: var(--accent-dark);
-    border: none;
-    border-radius: 10px;
-    padding: 12px 0;
-    font-size: 16px;
-    font-weight: 600;
-    font-family: 'Consolas', monospace;
-    cursor: pointer;
-    transition: 0.15s;
-    user-select: none;
-  }
-  .key:active { background: var(--key-bg-active); color: white; transform: scale(0.93); }
-  .key.fn { background: var(--key-fn-bg); color: var(--key-fn-text); }
-  .key.del { background: var(--key-del-bg); color: var(--key-del-text); }
-
-  .examples { display: none; }
-
-  @media (min-width: 600px) {
-    .card { padding: 36px; }
-    .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
-    .ex {
-      background: var(--key-bg);
-      color: var(--accent);
-      border: 1px solid transparent;
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-family: 'Consolas', monospace;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .ex:hover { background: var(--accent); color: white; transform: translateY(-2px); }
-    .keypad { grid-template-columns: repeat(10, 1fr); }
-    h1 { font-size: 26px; }
-  }
-
-  .error {
-    color: var(--err-text);
-    background: var(--err-bg);
-    margin-top: 14px;
-    display: none;
-    font-size: 14px;
-    border-radius: 10px;
-    padding: 10px 14px;
-    animation: shake 0.4s ease;
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-  }
-
-  .result {
-    margin-top: 22px;
-    background: var(--result-bg);
-    border-radius: 14px;
-    padding: 16px;
-    display: none;
-    line-height: 1.7;
-    color: var(--text-main);
-    font-size: 15px;
-    overflow-x: auto;
-    animation: appear 0.35s ease both;
-  }
-  .result .steps div { margin: 4px 0; }
-  .result .answer {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--divider);
-    font-size: 19px;
-    font-weight: 700;
-    color: var(--accent);
-    word-break: break-word;
-  }
-
-  canvas {
-    margin-top: 18px;
-    width: 100%;
-    height: 260px;
-    border-radius: 14px;
-    background: var(--chart-bg);
-    display: none;
-    animation: appear 0.35s ease both;
-  }
-
-  .footer {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-soft);
-  }
-
-  /* ==================== КАЛЬКУЛЯТОР ==================== */
-  .calc-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 12, 41, 0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    padding: 14px;
-  }
-  .calc-overlay.open { display: flex; }
-
-  .calc-box {
-    background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    width: 100%;
-    max-width: 400px;
-    padding: 16px;
-    animation: appear 0.3s ease both;
-    max-height: 92vh;
-    overflow-y: auto;
-  }
-
-  .calc-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  .calc-head span { font-weight: 700; color: var(--accent-dark); font-size: 16px; }
-  .calc-close {
-    border: none;
-    background: var(--key-del-bg);
-    color: var(--key-del-text);
-    border-radius: 999px;
-    width: 30px;
-    height: 30px;
-    font-size: 15px;
-    cursor: pointer;
-    line-height: 1;
-  }
-
-  .calc-display {
-    width: 100%;
-    padding: 14px 12px;
-    border: 2px solid var(--input-border);
-    border-radius: 12px;
-    background: var(--input-bg);
-    color: var(--text-main);
-    font-size: 20px;
-    font-family: 'Consolas', monospace;
-    text-align: right;
-    outline: none;
-  }
-  .calc-display:focus { border-color: var(--accent); }
-
-  .calc-prev {
-    text-align: right;
-    color: var(--text-soft);
-    font-size: 13px;
-    min-height: 18px;
-    margin: 6px 2px 0;
-    font-family: 'Consolas', monospace;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .calc-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-top: 10px;
-  }
-  .ckey {
-    border: none;
-    border-radius: 10px;
-    padding: 11px 0;
-    font-size: 15px;
-    font-weight: 600;
-    font-family: 'Consolas', monospace;
-    cursor: pointer;
-    transition: 0.15s;
-    user-select: none;
-    background: var(--key-bg);
-    color: var(--accent-dark);
-  }
-  .ckey:active { background: var(--key-bg-active); color: white; transform: scale(0.94); }
-  .ckey.op { background: var(--key-fn-bg); color: var(--key-fn-text); }
-  .ckey.eq {
-    background: linear-gradient(135deg, var(--btn-grad-1, #667eea), var(--btn-grad-2, #764ba2));
-    color: white;
-    grid-column: span 2;
-  }
-  .ckey.clr { background: var(--key-del-bg); color: var(--key-del-text); }
-  .ckey.wide2 { grid-column: span 2; }
+:root{--bg-grad-1:#667eea;--bg-grad-2:#764ba2;--card-bg:rgba(255,255,255,0.92);--text-main:#2d2a4a;--text-soft:#7a7699;--accent:#667eea;--accent-dark:#4a3f8f;--input-border:#e0ddef;--input-bg:#fff;--result-bg:#f8f7ff;--key-bg:#f0eefc;--key-bg-active:#667eea;--key-fn-bg:#e8f4fd;--key-fn-text:#2b7bc0;--key-del-bg:#fdecea;--key-del-text:#d63031;--err-bg:#fdecea;--err-text:#d63031;--grid-line:#eeeafc;--axis-line:#c8c4e8;--chart-bg:#fdfdff;--root-dot:#e17055;--divider:#d5d0f0;--shadow:0 20px 60px rgba(30,20,80,0.35);--glow:0 0 30px rgba(102,126,234,0.4)}
+[data-theme="dark"]{--card-bg:rgba(30,28,52,0.92);--text-main:#eceaff;--text-soft:#9a94c4;--accent:#8b93ff;--accent-dark:#b3b8ff;--input-border:#3d3968;--input-bg:#262347;--result-bg:#262347;--key-bg:#34305e;--key-bg-active:#667eea;--key-fn-bg:#2a3f5e;--key-fn-text:#7fc3ff;--key-del-bg:#4e2a35;--key-del-text:#ff8a94;--err-bg:#4e2a35;--err-text:#ff8a94;--grid-line:#2e2a52;--axis-line:#4a4578;--chart-bg:#221f40;--root-dot:#ff8a5c;--divider:#3d3968;--shadow:0 20px 60px rgba(0,0,0,0.6);--glow:0 0 40px rgba(102,126,234,0.25)}
+[data-theme="midnight"]{--bg-grad-1:#0f0c29;--bg-grad-2:#302b63;--card-bg:rgba(28,25,58,0.85);--text-main:#eae8ff;--text-soft:#8f8ab8;--accent:#a78bfa;--accent-dark:#c4b5fd;--input-border:#3f3a70;--input-bg:#262250;--result-bg:#262250;--key-bg:#332e63;--key-bg-active:#a78bfa;--key-fn-bg:#2c3e63;--key-fn-text:#7dd3fc;--key-del-bg:#522a3e;--key-del-text:#fb7185;--err-bg:#522a3e;--err-text:#fb7185;--grid-line:#2d2856;--axis-line:#4c468a;--chart-bg:#211d48;--root-dot:#fb923c;--divider:#3f3a70;--shadow:0 20px 60px rgba(0,0,0,0.65);--glow:0 0 45px rgba(167,139,250,0.3)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',sans-serif;min-height:100vh;background:linear-gradient(135deg,var(--bg-grad-1) 0%,var(--bg-grad-2) 100%);background-attachment:fixed;transition:background .5s;display:flex;justify-content:center;align-items:flex-start;padding:16px;color:var(--text-main)}
+.blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.45;pointer-events:none;z-index:0;animation:float 14s ease-in-out infinite alternate}
+.blob-1{width:300px;height:300px;background:rgba(255,119,198,.5);top:-80px;left:-80px}
+.blob-2{width:260px;height:260px;background:rgba(56,232,234,.4);bottom:-60px;right:-60px;animation-delay:-7s}
+@keyframes float{from{transform:translate(0,0) scale(1)}to{transform:translate(40px,30px) scale(1.15)}}
+.card{position:relative;z-index:1;background:var(--card-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.25);border-radius:24px;box-shadow:var(--shadow);max-width:560px;width:100%;padding:22px 16px;animation:appear .5s ease both;transition:background .4s}
+@keyframes appear{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+h1{color:var(--accent-dark);font-size:22px;letter-spacing:.3px}
+.top-controls{display:flex;gap:6px;align-items:center}
+.theme-switch{display:flex;background:var(--key-bg);border-radius:999px;padding:3px;gap:2px}
+.theme-btn,.custom-btn{border:none;background:transparent;border-radius:999px;width:34px;height:30px;font-size:15px;cursor:pointer;transition:.25s;line-height:1}
+.theme-btn.active,.custom-btn.active{background:var(--accent);box-shadow:var(--glow)}
+.custom-btn{background:var(--key-bg)}
+/* ===== Кнопка-меню справа (3 полоски) ===== */
+.menu-btn{border:none;background:var(--key-bg);border-radius:10px;width:40px;height:32px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;transition:.2s;flex-shrink:0}
+.menu-btn span{display:block;width:18px;height:2px;background:var(--accent-dark);border-radius:2px;transition:.25s}
+.menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menu-btn.active span:nth-child(2){opacity:0}
+.menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+/* ===== Выпадающее меню ===== */
+.menu{position:absolute;top:52px;right:0;min-width:250px;background:var(--card-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.25);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;z-index:70;animation:appear .25s ease both}
+.menu.open{display:block}
+.menu-item{display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;color:var(--text-main);font-size:15px;font-weight:600;text-align:left;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
+.menu-item:hover{background:var(--key-bg)}
+.menu-item .ico{font-size:18px;width:26px;text-align:center;flex-shrink:0}
+.menu-sep{height:1px;background:var(--divider);margin:6px 8px}
+.panel{display:none;background:var(--result-bg);border-radius:14px;padding:14px;margin-top:12px;animation:appear .3s ease both}
+.panel.open{display:block}
+.panel-title{font-size:13px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin:6px 0 10px}
+.panel-title:first-child{margin-top:0}
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.swatch{height:44px;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:.2s;padding:0;font-size:9px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+.swatch:hover{transform:scale(1.1)}
+.swatch.active{border-color:var(--text-main);box-shadow:var(--glow)}
+.btn-reset{width:100%;padding:10px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--key-bg);color:var(--text-soft)}
+.subtitle{text-align:center;color:var(--text-soft);font-size:13px;margin-bottom:18px}
+.input-row{display:flex;gap:8px}
+#eq{flex:1;min-width:0;padding:14px 12px;border:2px solid var(--input-border);border-radius:14px;background:var(--input-bg);color:var(--text-main);font-size:18px;font-family:'Consolas',monospace;outline:none;transition:.25s}
+#eq:focus{border-color:var(--accent);box-shadow:var(--glow)}
+#eq::placeholder{color:var(--text-soft)}
+button.solve{padding:14px 18px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--btn-grad-1,#667eea),var(--btn-grad-2,#764ba2));color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap;box-shadow:0 6px 18px rgba(102,126,234,.45)}
+button.solve:active{transform:scale(.97)}
+.keypad{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
+.key{background:var(--key-bg);color:var(--accent-dark);border:none;border-radius:10px;padding:12px 0;font-size:16px;font-weight:600;font-family:'Consolas',monospace;cursor:pointer;transition:.15s;user-select:none}
+.key:active{background:var(--key-bg-active);color:#fff;transform:scale(.93)}
+.key.fn{background:var(--key-fn-bg);color:var(--key-fn-text)}
+.key.del{background:var(--key-del-bg);color:var(--key-del-text)}
+.examples{display:none}
+@media(min-width:600px){.card{padding:36px}.examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}.ex{background:var(--key-bg);color:var(--accent);border:1px solid transparent;border-radius:20px;padding:6px 14px;font-size:13px;font-family:'Consolas',monospace;cursor:pointer;transition:.2s}.ex:hover{background:var(--accent);color:#fff}.keypad{grid-template-columns:repeat(10,1fr)}h1{font-size:26px}}
+.error{color:var(--err-text);background:var(--err-bg);margin-top:14px;display:none;font-size:14px;border-radius:10px;padding:10px 14px;animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.result{margin-top:22px;background:var(--result-bg);border-radius:14px;padding:16px;display:none;line-height:1.7;color:var(--text-main);font-size:15px;overflow-x:auto;animation:appear .35s ease both}
+.result .steps div{margin:4px 0}
+.result .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--divider);font-size:19px;font-weight:700;color:var(--accent);word-break:break-word}
+canvas{margin-top:18px;width:100%;height:260px;border-radius:14px;background:var(--chart-bg);display:none;animation:appear .35s ease both}
+.footer{margin-top:20px;text-align:center;font-size:12px;color:var(--text-soft)}
+/* ===== Модальные окна ===== */
+.overlay{position:fixed;inset:0;background:rgba(15,12,41,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;justify-content:center;align-items:center;z-index:100;padding:14px}
+.overlay.open{display:flex}
+.modal{background:var(--card-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.25);border-radius:20px;box-shadow:var(--shadow);width:100%;max-width:400px;padding:16px;animation:appear .3s ease both;max-height:92vh;overflow-y:auto}
+.m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.m-head span{font-weight:700;color:var(--accent-dark);font-size:16px}
+.m-close{border:none;background:var(--key-del-bg);color:var(--key-del-text);border-radius:999px;width:30px;height:30px;font-size:15px;cursor:pointer;line-height:1}
+.m-input{width:100%;padding:14px 12px;border:2px solid var(--input-border);border-radius:12px;background:var(--input-bg);color:var(--text-main);font-size:18px;font-family:'Consolas',monospace;outline:none}
+.m-input:focus{border-color:var(--accent)}
+.calc-prev{text-align:right;color:var(--text-soft);font-size:13px;min-height:18px;margin:6px 2px 0;font-family:'Consolas',monospace;overflow-x:auto;white-space:nowrap}
+.calc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.ckey{border:none;border-radius:10px;padding:11px 0;font-size:15px;font-weight:600;font-family:'Consolas',monospace;cursor:pointer;transition:.15s;user-select:none;background:var(--key-bg);color:var(--accent-dark)}
+.ckey:active{background:var(--key-bg-active);color:#fff;transform:scale(.94)}
+.ckey.op{background:var(--key-fn-bg);color:var(--key-fn-text)}
+.ckey.eq{background:linear-gradient(135deg,var(--btn-grad-1,#667eea),var(--btn-grad-2,#764ba2));color:#fff;grid-column:span 2}
+.ckey.clr{background:var(--key-del-bg);color:var(--key-del-text)}
+.chem-res{margin-top:12px;background:var(--result-bg);border-radius:12px;padding:12px;display:none;line-height:1.7;font-size:14px}
+.chem-res .answer{margin-top:8px;padding-top:8px;border-top:1px dashed var(--divider);font-size:17px;font-weight:700;color:var(--accent)}
+.chem-err{margin-top:10px;color:var(--err-text);background:var(--err-bg);border-radius:10px;padding:8px 12px;display:none;font-size:13px}
 </style>
 </head>
 <body>
@@ -482,28 +94,33 @@
 
   <div class="card">
     <div class="top-bar">
-      <h1> allator</h1>
+      <h1>🧮 Allator</h1>
       <div class="top-controls">
-        <button class="calc-btn" id="calcBtn" title="Калькулятор">Кал</button>
         <button class="custom-btn" id="customBtn" title="Настроить цвета">🎨</button>
         <div class="theme-switch" id="themes">
-          <button class="theme-btn" data-theme="light" title="Светлая">☀️</button>
-          <button class="theme-btn" data-theme="dark" title="Тёмная">🌙</button>
-          <button class="theme-btn" data-theme="midnight" title="Полночная">🌌</button>
+          <button class="theme-btn" data-theme="light">☀️</button>
+          <button class="theme-btn" data-theme="dark">🌙</button>
+          <button class="theme-btn" data-theme="midnight">🌌</button>
         </div>
+        <!-- Кнопка-меню: 3 полоски, справа -->
+        <button class="menu-btn" id="menuBtn" title="Меню"><span></span><span></span><span></span></button>
+      </div>
+      <!-- Выпадающее меню -->
+      <div class="menu" id="menu">
+        <button class="menu-item" data-open="calc"><span class="ico">🖩</span>Калькулятор</button>
+        <button class="menu-item" data-open="allator"><span class="ico">🧮</span>Allator (решатель уравнений)</button>
+        <div class="menu-sep"></div>
+        <button class="menu-item" data-open="chem"><span class="ico">⚗️</span>Химический калькулятор</button>
       </div>
     </div>
-    <p class="subtitle">Напишите уравнение — сайт сам его разберёт и решит</p>
+    <p class="subtitle">Напишите уравнение — Allator сам его разберёт и решит</p>
 
-    <!-- Панель: 10 фонов + 10 кнопок -->
     <div class="panel" id="panel">
       <div class="panel-title">Фон — 10 вариантов</div>
       <div class="swatches" id="swBg"></div>
       <div class="panel-title">Кнопка «Решить» — 10 вариантов</div>
       <div class="swatches" id="swBtn"></div>
-      <div class="panel-actions">
-        <button class="btn-reset" id="resetColors">Сбросить к теме</button>
-      </div>
+      <div class="panel-actions"><button class="btn-reset" id="resetColors">Сбросить к теме</button></div>
     </div>
 
     <div class="input-row">
@@ -511,49 +128,16 @@
       <button class="solve" id="btn">Решить</button>
     </div>
 
-    <!-- Клавиатурка -->
-    <div class="keypad" id="keypad">
-      <button class="key" data-ins="7">7</button>
-      <button class="key" data-ins="8">8</button>
-      <button class="key" data-ins="9">9</button>
-      <button class="key" data-ins="/">÷</button>
-      <button class="key" data-ins="(">(</button>
-      <button class="key del" data-del="1">⌫</button>
-      <button class="key" data-ins="4">4</button>
-      <button class="key" data-ins="5">5</button>
-      <button class="key" data-ins="6">6</button>
-      <button class="key" data-ins="*">×</button>
-      <button class="key" data-ins=")">)</button>
-      <button class="key" data-ins="=">=</button>
-      <button class="key" data-ins="1">1</button>
-      <button class="key" data-ins="2">2</button>
-      <button class="key" data-ins="3">3</button>
-      <button class="key" data-ins="-">−</button>
-      <button class="key" data-ins="^">x^</button>
-      <button class="key" data-ins="x">x</button>
-      <button class="key" data-ins="0">0</button>
-      <button class="key" data-ins=".">,</button>
-      <button class="key" data-ins="+">+</button>
-      <button class="key fn" data-ins="sqrt(">√</button>
-      <button class="key fn" data-ins="sin(">sin</button>
-      <button class="key fn" data-ins="cos(">cos</button>
-      <button class="key fn" data-ins="tan(">tg</button>
-      <button class="key fn" data-ins="pi">π</button>
-      <button class="key fn" data-ins="ln(">ln</button>
-      <button class="key fn" data-ins="log(">log</button>
-      <button class="key fn" data-ins="abs(">|a|</button>
-      <button class="key fn" data-ins="e">e</button>
-      <button class="key fn" data-clear="1">Очистить</button>
+    <div class="keypad">
+      <button class="key" data-ins="7">7</button><button class="key" data-ins="8">8</button><button class="key" data-ins="9">9</button><button class="key" data-ins="/">÷</button><button class="key" data-ins="(">(</button><button class="key del" data-del="1">⌫</button>
+      <button class="key" data-ins="4">4</button><button class="key" data-ins="5">5</button><button class="key" data-ins="6">6</button><button class="key" data-ins="*">×</button><button class="key" data-ins=")">)</button><button class="key" data-ins="=">=</button>
+      <button class="key" data-ins="1">1</button><button class="key" data-ins="2">2</button><button class="key" data-ins="3">3</button><button class="key" data-ins="-">−</button><button class="key" data-ins="^">x^</button><button class="key" data-ins="x">x</button>
+      <button class="key" data-ins="0">0</button><button class="key" data-ins=".">,</button><button class="key" data-ins="+">+</button><button class="key fn" data-ins="sqrt(">√</button><button class="key fn" data-ins="sin(">sin</button><button class="key fn" data-ins="cos(">cos</button>
+      <button class="key fn" data-ins="tan(">tg</button><button class="key fn" data-ins="pi">π</button><button class="key fn" data-ins="ln(">ln</button><button class="key fn" data-ins="log(">log</button><button class="key fn" data-ins="abs(">|a|</button><button class="key fn" data-clear="1">Очистить</button>
     </div>
 
     <div class="examples">
-      <button class="ex">x^2 - 5x + 6 = 0</button>
-      <button class="ex">2x + 3 = 5</button>
-      <button class="ex">x^3 - 6x^2 + 11x - 6 = 0</button>
-      <button class="ex">(x+1)(x-3) = 0</button>
-      <button class="ex">x/2 + 1 = x/3 - 2</button>
-      <button class="ex">sin(x) = 0.5</button>
-      <button class="ex">2^x = 16</button>
+      <button class="ex">x^2 - 5x + 6 = 0</button><button class="ex">2x + 3 = 5</button><button class="ex">x^3 - 6x^2 + 11x - 6 = 0</button><button class="ex">(x+1)(x-3) = 0</button><button class="ex">x/2 + 1 = x/3 - 2</button><button class="ex">sin(x) = 0.5</button><button class="ex">2^x = 16</button>
     </div>
 
     <div class="error" id="err"></div>
@@ -563,700 +147,502 @@
     <div class="footer">Сайт создали: giver | uno</div>
   </div>
 
-  <!-- ==================== КАЛЬКУЛЯТОР ==================== -->
-  <div class="calc-overlay" id="calcOverlay">
-    <div class="calc-box">
-      <div class="calc-head">
-        <span>🖩 Калькулятор</span>
-        <button class="calc-close" id="calcClose">✕</button>
-      </div>
-      <input type="text" class="calc-display" id="calcDisplay" placeholder="0">
+  <!-- КАЛЬКУЛЯТОР -->
+  <div class="overlay" id="calcOverlay">
+    <div class="modal">
+      <div class="m-head"><span>🖩 Калькулятор</span><button class="m-close" id="calcClose">✕</button></div>
+      <input type="text" class="m-input" id="calcDisplay" placeholder="0">
       <div class="calc-prev" id="calcPrev"></div>
       <div class="calc-grid">
-        <button class="ckey clr" data-cins="C">C</button>
-        <button class="ckey" data-cins="(">(</button>
-        <button class="ckey" data-cins=")">)</button>
-        <button class="ckey" data-cins="%">%</button>
-        <button class="ckey op" data-cdel="1">⌫</button>
-
-        <button class="ckey op" data-cins="sin(">sin</button>
-        <button class="ckey op" data-cins="cos(">cos</button>
-        <button class="ckey op" data-cins="tan(">tan</button>
-        <button class="ckey op" data-cins="pi">π</button>
-        <button class="ckey op" data-cins="^">x^y</button>
-
-        <button class="ckey op" data-cins="asin(">sin⁻¹</button>
-        <button class="ckey op" data-cins="acos(">cos⁻¹</button>
-        <button class="ckey op" data-cins="atan(">tan⁻¹</button>
-        <button class="ckey op" data-cins="e">e</button>
-        <button class="ckey op" data-cins="!">n!</button>
-
-        <button class="ckey op" data-cins="sqrt(">√</button>
-        <button class="ckey op" data-cins="^2">x²</button>
-        <button class="ckey op" data-cins="ln(">ln</button>
-        <button class="ckey op" data-cins="log(">log</button>
-        <button class="ckey op" data-cins="exp(">e^x</button>
-
-        <button class="ckey" data-cins="7">7</button>
-        <button class="ckey" data-cins="8">8</button>
-        <button class="ckey" data-cins="9">9</button>
-        <button class="ckey op" data-cins="/">÷</button>
-        <button class="ckey op" data-cins="abs(">|a|</button>
-
-        <button class="ckey" data-cins="4">4</button>
-        <button class="ckey" data-cins="5">5</button>
-        <button class="ckey" data-cins="6">6</button>
-        <button class="ckey op" data-cins="*">×</button>
-        <button class="ckey op" data-cins="x">Ans</button>
-
-        <button class="ckey" data-cins="1">1</button>
-        <button class="ckey" data-cins="2">2</button>
-        <button class="ckey" data-cins="3">3</button>
-        <button class="ckey op" data-cins="-">−</button>
-        <button class="ckey op" data-cins="sinh(">sh</button>
-
-        <button class="ckey" data-cins="0">0</button>
-        <button class="ckey" data-cins=".">,</button>
-        <button class="ckey op" data-cins="+">+</button>
-        <button class="ckey eq" data-ceq="1">=</button>
+        <button class="ckey clr" data-cins="C">C</button><button class="ckey" data-cins="(">(</button><button class="ckey" data-cins=")">)</button><button class="ckey" data-cins="%">%</button><button class="ckey op" data-cdel="1">⌫</button>
+        <button class="ckey op" data-cins="sin(">sin</button><button class="ckey op" data-cins="cos(">cos</button><button class="ckey op" data-cins="tan(">tan</button><button class="ckey op" data-cins="pi">π</button><button class="ckey op" data-cins="^">x^y</button>
+        <button class="ckey op" data-cins="asin(">sin⁻¹</button><button class="ckey op" data-cins="acos(">cos⁻¹</button><button class="ckey op" data-cins="atan(">tan⁻¹</button><button class="ckey op" data-cins="e">e</button><button class="ckey op" data-cins="!">n!</button>
+        <button class="ckey op" data-cins="sqrt(">√</button><button class="ckey op" data-cins="^2">x²</button><button class="ckey op" data-cins="ln(">ln</button><button class="ckey op" data-cins="log(">log</button><button class="ckey op" data-cins="exp(">e^x</button>
+        <button class="ckey" data-cins="7">7</button><button class="ckey" data-cins="8">8</button><button class="ckey" data-cins="9">9</button><button class="ckey op" data-cins="/">÷</button><button class="ckey op" data-cins="abs(">|a|</button>
+        <button class="ckey" data-cins="4">4</button><button class="ckey" data-cins="5">5</button><button class="ckey" data-cins="6">6</button><button class="ckey op" data-cins="*">×</button><button class="ckey op" data-cins="x">Ans</button>
+        <button class="ckey" data-cins="1">1</button><button class="ckey" data-cins="2">2</button><button class="ckey" data-cins="3">3</button><button class="ckey op" data-cins="-">−</button><button class="ckey op" data-cins="sinh(">sh</button>
+        <button class="ckey" data-cins="0">0</button><button class="ckey" data-cins=".">,</button><button class="ckey op" data-cins="+">+</button><button class="ckey eq" data-ceq="1">=</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ХИМИЧЕСКИЙ КАЛЬКУЛЯТОР -->
+  <div class="overlay" id="chemOverlay">
+    <div class="modal">
+      <div class="m-head"><span>⚗️ Химический калькулятор</span><button class="m-close" id="chemClose">✕</button></div>
+      <input type="text" class="m-input" id="chemInput" placeholder="например: H2SO4 или Ca(OH)2">
+      <div class="calc-prev">Введите формулу вещества — покажу молярную массу</div>
+      <div class="chem-err" id="chemErr"></div>
+      <div class="chem-res" id="chemRes"></div>
     </div>
   </div>
 
 <script>
 // ==================== ПАРСЕР ====================
-function tokenize(s) {
-  s = s.replace(/√/g, 'sqrt').replace(/·|×/g, '*').replace(/−/g, '-').replace(/,/g, '.').replace(/π/g, 'pi');
-  const tokens = [];
-  let i = 0;
-  while (i < s.length) {
-    const c = s[i];
-    if (c === ' ') { i++; continue; }
-    if (/[0-9.]/.test(c)) {
-      let j = i;
-      while (j < s.length && /[0-9.]/.test(s[j])) j++;
-      tokens.push({ t: 'num', v: parseFloat(s.slice(i, j)) });
-      i = j;
-    } else if (/[a-zA-Z]/.test(c)) {
-      let j = i;
-      while (j < s.length && /[a-zA-Z]/.test(s[j])) j++;
-      tokens.push({ t: 'id', v: s.slice(i, j).toLowerCase() });
-      i = j;
-    } else if ('+-*/^()=!%'.includes(c)) {
-      tokens.push({ t: c });
-      i++;
-    } else {
-      throw new Error('непонятный символ: «' + c + '»');
-    }
+function tokenize(s){
+  s=s.replace(/√/g,'sqrt').replace(/·|×/g,'*').replace(/−/g,'-').replace(/,/g,'.').replace(/π/g,'pi');
+  const t=[];let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(c===' '){i++;continue}
+    if(/[0-9.]/.test(c)){let j=i;while(j<s.length&&/[0-9.]/.test(s[j]))j++;t.push({t:'num',v:parseFloat(s.slice(i,j))});i=j}
+    else if(/[a-zA-Z]/.test(c)){let j=i;while(j<s.length&&/[a-zA-Z]/.test(s[j]))j++;t.push({t:'id',v:s.slice(i,j).toLowerCase()});i=j}
+    else if('+-*/^()=!%'.includes(c)){t.push({t:c});i++}
+    else throw new Error('непонятный символ: «'+c+'»');
   }
-  return tokens;
+  return t;
 }
-
-const FUNCS = ['sin', 'cos', 'tan', 'tg', 'sqrt', 'ln', 'log', 'abs', 'exp',
-               'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh'];
-const CONSTS = { pi: Math.PI, e: Math.E };
-
-function factorial(n) {
-  if (n < 0 || !Number.isInteger(n)) throw new Error('факториал только для целых неотрицательных чисел');
-  if (n > 170) return Infinity;
-  let r = 1;
-  for (let i = 2; i <= n; i++) r *= i;
-  return r;
-}
-
-function parse(tokens) {
-  let pos = 0;
-  const peek = () => tokens[pos];
-  const next = () => tokens[pos++];
-
-  function parseExpr() {
-    let node = parseTerm();
-    while (peek() && (peek().t === '+' || peek().t === '-')) {
-      const op = next().t;
-      node = { t: 'op', op, l: node, r: parseTerm() };
-    }
-    return node;
-  }
-
-  function parseTerm() {
-    let node = parseUnary();
-    for (;;) {
-      const p = peek();
-      if (p && (p.t === 'id' || p.t === 'num' || p.t === '(') && node.t !== 'op') {
-        node = { t: 'op', op: '*', l: node, r: parseUnary() };
-        continue;
-      }
-      if (p && p.t === '*') { next(); node = { t: 'op', op: '*', l: node, r: parseUnary() }; continue; }
-      if (p && p.t === '/') { next(); node = { t: 'op', op: '/', l: node, r: parseUnary() }; continue; }
-      break;
-    }
-    return node;
-  }
-
-  function parseUnary() {
-    if (peek() && peek().t === '-') { next(); return { t: 'op', op: '-', l: { t: 'num', v: 0 }, r: parseUnary() }; }
-    if (peek() && peek().t === '+') { next(); return parseUnary(); }
-    return parsePostfix(parsePower());
-  }
-
-  // постфиксные операции: факториал ! и процент %
-  function parsePostfix(node) {
-    for (;;) {
-      const p = peek();
-      if (p && p.t === '!') { next(); node = { t: 'fn', name: 'fact', arg: node }; continue; }
-      if (p && p.t === '%') { next(); node = { t: 'op', op: '/', l: node, r: { t: 'num', v: 100 } }; continue; }
-      break;
-    }
-    return node;
-  }
-
-  function parsePower() {
-    const base = parsePrimary();
-    if (peek() && peek().t === '^') { next(); return { t: 'op', op: '^', l: base, r: parseUnary() }; }
-    return base;
-  }
-
-  function parsePrimary() {
-    const p = next();
-    if (!p) throw new Error('выражение обрывается');
-    if (p.t === 'num') return { t: 'num', v: p.v };
-    if (p.t === '(') {
-      const inner = parseExpr();
-      if (!peek() || peek().t !== ')') throw new Error('не закрыта скобка');
-      next();
-      return inner;
-    }
-    if (p.t === 'id') {
-      if (p.v === 'x') return { t: 'x' };
-      if (CONSTS[p.v] !== undefined) return { t: 'num', v: CONSTS[p.v] };
-      if (FUNCS.includes(p.v)) {
-        let arg;
-        if (peek() && peek().t === '(') { next(); arg = parseExpr(); if (!peek() || peek().t !== ')') throw new Error('не закрыта скобка'); next(); }
-        else arg = parsePower();
-        return { t: 'fn', name: p.v === 'tg' ? 'tan' : p.v, arg };
-      }
-      throw new Error('неизвестное имя: «' + p.v + '»');
+const FUNCS=['sin','cos','tan','tg','sqrt','ln','log','abs','exp','asin','acos','atan','sinh','cosh','tanh'];
+const CONSTS={pi:Math.PI,e:Math.E};
+function factorial(n){if(n<0||!Number.isInteger(n))throw new Error('факториал только для целых неотрицательных');if(n>170)return Infinity;let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function parse(tokens){
+  let pos=0;const peek=()=>tokens[pos];const next=()=>tokens[pos++];
+  function parseExpr(){let n=parseTerm();while(peek()&&(peek().t==='+'||peek().t==='-')){const op=next().t;n={t:'op',op,l:n,r:parseTerm()}}return n}
+  function parseTerm(){let n=parseUnary();for(;;){const p=peek();
+    if(p&&(p.t==='id'||p.t==='num'||p.t==='(')&&n.t!=='op'){n={t:'op',op:'*',l:n,r:parseUnary()};continue}
+    if(p&&p.t==='*'){next();n={t:'op',op:'*',l:n,r:parseUnary()};continue}
+    if(p&&p.t==='/'){next();n={t:'op',op:'/',l:n,r:parseUnary()};continue}
+    break}return n}
+  function parseUnary(){if(peek()&&peek().t==='-'){next();return{t:'op',op:'-',l:{t:'num',v:0},r:parseUnary()}}if(peek()&&peek().t==='+'){next();return parseUnary()}return parsePostfix(parsePower())}
+  function parsePostfix(n){for(;;){const p=peek();
+    if(p&&p.t==='!'){next();n={t:'fn',name:'fact',arg:n};continue}
+    if(p&&p.t==='%'){next();n={t:'op',op:'/',l:n,r:{t:'num',v:100}};continue}
+    break}return n}
+  function parsePower(){const b=parsePrimary();if(peek()&&peek().t==='^'){next();return{t:'op',op:'^',l:b,r:parseUnary()}}return b}
+  function parsePrimary(){
+    const p=next();if(!p)throw new Error('выражение обрывается');
+    if(p.t==='num')return{t:'num',v:p.v};
+    if(p.t==='('){const inner=parseExpr();if(!peek()||peek().t!==')')throw new Error('не закрыта скобка');next();return inner}
+    if(p.t==='id'){
+      if(p.v==='x')return{t:'x'};
+      if(CONSTS[p.v]!==undefined)return{t:'num',v:CONSTS[p.v]};
+      if(FUNCS.includes(p.v)){let arg;
+        if(peek()&&peek().t==='('){next();arg=parseExpr();if(!peek()||peek().t!==')')throw new Error('не закрыта скобка');next()}
+        else arg=parsePower();
+        return{t:'fn',name:p.v==='tg'?'tan':p.v,arg}}
+      throw new Error('неизвестное имя: «'+p.v+'»');
     }
     throw new Error('неожиданный символ в выражении');
   }
-
-  const node = parseExpr();
-  if (pos < tokens.length) throw new Error('лишние символы в конце');
+  const node=parseExpr();
+  if(pos<tokens.length)throw new Error('лишние символы в конце');
   return node;
 }
-
-function evalNode(node, x) {
-  switch (node.t) {
-    case 'num': return node.v;
-    case 'x': return x;
-    case 'op': {
-      const a = evalNode(node.l, x), b = evalNode(node.r, x);
-      switch (node.op) {
-        case '+': return a + b;
-        case '-': return a - b;
-        case '*': return a * b;
-        case '/': return a / b;
-        case '^': return Math.pow(a, b);
-      }
-    }
-    case 'fn': {
-      const a = evalNode(node.arg, x);
-      switch (node.name) {
-        case 'sin': return Math.sin(a);
-        case 'cos': return Math.cos(a);
-        case 'tan': return Math.tan(a);
-        case 'asin': return Math.asin(a);
-        case 'acos': return Math.acos(a);
-        case 'atan': return Math.atan(a);
-        case 'sinh': return Math.sinh(a);
-        case 'cosh': return Math.cosh(a);
-        case 'tanh': return Math.tanh(a);
-        case 'sqrt': return a < 0 ? NaN : Math.sqrt(a);
-        case 'ln': return a <= 0 ? NaN : Math.log(a);
-        case 'log': return a <= 0 ? NaN : Math.log10(a);
-        case 'abs': return Math.abs(a);
-        case 'exp': return Math.exp(a);
-        case 'fact': return factorial(a);
-      }
-    }
+function evalNode(node,x){
+  switch(node.t){
+    case'num':return node.v;case'x':return x;
+    case'op':{const a=evalNode(node.l,x),b=evalNode(node.r,x);
+      switch(node.op){case'+':return a+b;case'-':return a-b;case'*':return a*b;case'/':return a/b;case'^':return Math.pow(a,b)}}
+    case'fn':{const a=evalNode(node.arg,x);
+      switch(node.name){
+        case'sin':return Math.sin(a);case'cos':return Math.cos(a);case'tan':return Math.tan(a);
+        case'asin':return Math.asin(a);case'acos':return Math.acos(a);case'atan':return Math.atan(a);
+        case'sinh':return Math.sinh(a);case'cosh':return Math.cosh(a);case'tanh':return Math.tanh(a);
+        case'sqrt':return a<0?NaN:Math.sqrt(a);
+        case'ln':return a<=0?NaN:Math.log(a);case'log':return a<=0?NaN:Math.log10(a);
+        case'abs':return Math.abs(a);case'exp':return Math.exp(a);case'fact':return factorial(a)}}
   }
 }
-
-function hasX(node) {
-  if (node.t === 'x') return true;
-  if (node.t === 'op') return hasX(node.l) || hasX(node.r);
-  if (node.t === 'fn') return hasX(node.arg);
-  return false;
-}
-
-function toPoly(node, maxDeg) {
-  if (node.t === 'num') return [node.v];
-  if (node.t === 'x') return [0, 1];
-  if (node.t === 'fn') return null;
-  if (node.t === 'op') {
-    const L = toPoly(node.l, maxDeg), R = toPoly(node.r, maxDeg);
-    if (!L || !R) return null;
-    if (node.op === '+' || node.op === '-') {
-      const out = new Array(Math.max(L.length, R.length)).fill(0);
-      for (let i = 0; i < L.length; i++) out[i] += L[i];
-      for (let i = 0; i < R.length; i++) out[i] += (node.op === '+' ? R[i] : -R[i]);
-      return out.length > maxDeg + 1 ? null : out;
-    }
-    if (node.op === '*') {
-      const out = new Array(L.length + R.length - 1).fill(0);
-      for (let i = 0; i < L.length; i++)
-        for (let j = 0; j < R.length; j++) out[i + j] += L[i] * R[j];
-      return out.length > maxDeg + 1 ? null : out;
-    }
-    if (node.op === '^') {
-      if (node.r.t !== 'num' || !Number.isInteger(node.r.v) || node.r.v < 0 || node.r.v > maxDeg) return null;
-      let out = [1];
-      for (let k = 0; k < node.r.v; k++) {
-        const tmp = new Array(out.length + L.length - 1).fill(0);
-        for (let i = 0; i < out.length; i++)
-          for (let j = 0; j < L.length; j++) tmp[i + j] += out[i] * L[j];
-        out = tmp;
-      }
-      return out.length > maxDeg + 1 ? null : out;
-    }
+function hasX(n){if(n.t==='x')return true;if(n.t==='op')return hasX(n.l)||hasX(n.r);if(n.t==='fn')return hasX(n.arg);return false}
+function toPoly(n,maxDeg){
+  if(n.t==='num')return[n.v];
+  if(n.t==='x')return[0,1];
+  if(n.t==='fn')return null;
+  if(n.t==='op'){
+    const L=toPoly(n.l,maxDeg),R=toPoly(n.r,maxDeg);
+    if(!L||!R)return null;
+    if(n.op==='+'||n.op==='-'){const out=new Array(Math.max(L.length,R.length)).fill(0);
+      for(let i=0;i<L.length;i++)out[i]+=L[i];
+      for(let i=0;i<R.length;i++)out[i]+=(n.op==='+'?R[i]:-R[i]);
+      return out.length>maxDeg+1?null:out}
+    if(n.op==='*'){const out=new Array(L.length+R.length-1).fill(0);
+      for(let i=0;i<L.length;i++)for(let j=0;j<R.length;j++)out[i+j]+=L[i]*R[j];
+      return out.length>maxDeg+1?null:out}
+    if(n.op==='^'){
+      if(n.r.t!=='num'||!Number.isInteger(n.r.v)||n.r.v<0||n.r.v>maxDeg)return null;
+      let out=[1];
+      for(let k=0;k<n.r.v;k++){const tmp=new Array(out.length+L.length-1).fill(0);
+        for(let i=0;i<out.length;i++)for(let j=0;j<L.length;j++)tmp[i+j]+=out[i]*L[j];out=tmp}
+      return out.length>maxDeg+1?null:out}
   }
   return null;
 }
-
-function findRoots(f) {
-  const roots = [];
-  const ranges = [10, 100, 1000];
-  let R = 10;
-  for (const r of ranges) {
-    R = r;
-    roots.length = 0;
-    let prevX = -R, prevY = f(-R);
-    for (let x = -R + R / 20000; x <= R; x += R / 20000) {
-      const y = f(x);
-      if (isFinite(y) && isFinite(prevY)) {
-        if (prevY * y <= 0 && Math.abs(y - prevY) < 1e6 * Math.max(Math.abs(y), 1)) {
-          let lo = prevX, hi = x;
-          for (let k = 0; k < 80; k++) {
-            const mid = (lo + hi) / 2;
-            const fm = f(mid);
-            if (!isFinite(fm)) break;
-            if (f(lo) * fm <= 0) hi = mid; else lo = mid;
-          }
-          const root = (lo + hi) / 2;
-          if (Math.abs(f(root)) < 1e-6 && !roots.some(r0 => Math.abs(r0 - root) < 1e-6))
-            roots.push(root);
+function findRoots(f){
+  const roots=[];const ranges=[10,100,1000];let R=10;
+  for(const r of ranges){R=r;roots.length=0;
+    let prevX=-R,prevY=f(-R);
+    for(let x=-R+R/20000;x<=R;x+=R/20000){
+      const y=f(x);
+      if(isFinite(y)&&isFinite(prevY)){
+        if(prevY*y<=0&&Math.abs(y-prevY)<1e6*Math.max(Math.abs(y),1)){
+          let lo=prevX,hi=x;
+          for(let k=0;k<80;k++){const mid=(lo+hi)/2;const fm=f(mid);if(!isFinite(fm))break;if(f(lo)*fm<=0)hi=mid;else lo=mid}
+          const root=(lo+hi)/2;
+          if(Math.abs(f(root))<1e-6&&!roots.some(r0=>Math.abs(r0-root)<1e-6))roots.push(root);
         }
-        if (Math.abs(y) < 1e-12 && !roots.some(r0 => Math.abs(r0 - x) < 1e-6)) roots.push(x);
+        if(Math.abs(y)<1e-12&&!roots.some(r0=>Math.abs(r0-x)<1e-6))roots.push(x);
       }
-      prevX = x; prevY = y;
-      if (roots.length >= 12) break;
+      prevX=x;prevY=y;
+      if(roots.length>=12)break;
     }
-    if (roots.length) break;
+    if(roots.length)break;
   }
   return roots;
 }
-
-// ==================== UI ====================
-const eqInput = document.getElementById('eq');
-const btn = document.getElementById('btn');
-const result = document.getElementById('result');
-const err = document.getElementById('err');
-const chart = document.getElementById('chart');
-const ctx = chart.getContext('2d');
-
-function fmt(x) {
-  if (Number.isInteger(x)) return x.toString();
-  return (+x.toFixed(4)).toString();
-}
-
-function polyStr(coeffs) {
-  const parts = [];
-  for (let i = coeffs.length - 1; i >= 0; i--) {
-    if (Math.abs(coeffs[i]) < 1e-12) continue;
-    const sign = coeffs[i] < 0 ? '− ' : (parts.length ? '+ ' : '');
-    const abs = Math.abs(coeffs[i]);
-    if (i === 0) parts.push(sign + fmt(abs));
-    else if (i === 1) parts.push(sign + (abs === 1 ? '' : fmt(abs)) + 'x');
-    else parts.push(sign + (abs === 1 ? '' : fmt(abs)) + 'x^' + i);
-  }
-  return parts.length ? parts.join(' ') : '0';
-}
-
-function solve() {
-  err.style.display = 'none';
-  result.style.display = 'none';
-  chart.style.display = 'none';
-
-  const raw = eqInput.value.trim();
-  if (!raw) return;
-
-  try {
-    const eqParts = raw.split('=');
-    if (eqParts.length !== 2) throw new Error('нужен ровно один знак «=»');
-    const L = parse(tokenize(eqParts[0]));
-    const R = parse(tokenize(eqParts[1]));
-    if (!hasX(L) && !hasX(R)) throw new Error('в уравнении нет переменной x');
-
-    const F = { t: 'op', op: '-', l: L, r: R };
-    const f = x => evalNode(F, x);
-
-    const steps = [];
-    let answer = '';
-
-    const poly = toPoly(F, 8);
-    if (poly) {
-      while (poly.length > 1 && Math.abs(poly[poly.length - 1]) < 1e-12) poly.pop();
-      const deg = poly.length - 1;
-      steps.push('Переносим всё в левую часть: ' + polyStr(poly) + ' = 0');
-
-      if (deg === 0) {
-        answer = Math.abs(poly[0]) < 1e-12 ? 'Верно при любом x' : 'Решений нет';
-      } else if (deg === 1) {
-        const x = -poly[0] / poly[1];
-        steps.push('Это линейное уравнение: x = ' + fmt(-poly[0]) + ' / ' + fmt(poly[1]));
-        answer = 'x = ' + fmt(x);
-        drawPlot(f, [x]);
-      } else if (deg === 2) {
-        const a = poly[2], b = poly[1], c = poly[0];
-        const D = b * b - 4 * a * c;
-        steps.push('Дискриминант: D = b² − 4ac = ' + fmt(b * b) + ' − ' + fmt(4 * a * c) + ' = ' + fmt(D));
-        if (D > 0) {
-          const x1 = (-b + Math.sqrt(D)) / (2 * a), x2 = (-b - Math.sqrt(D)) / (2 * a);
-          steps.push('D > 0 — два корня');
-          answer = 'x₁ = ' + fmt(x1) + ', x₂ = ' + fmt(x2);
-          drawPlot(f, [x1, x2]);
-        } else if (Math.abs(D) < 1e-12) {
-          const x = -b / (2 * a);
-          steps.push('D = 0 — один корень');
-          answer = 'x = ' + fmt(x);
-          drawPlot(f, [x]);
-        } else {
-          const re = -b / (2 * a), im = Math.sqrt(-D) / (2 * a);
-          steps.push('D < 0 — действительных корней нет');
-          answer = 'x = ' + fmt(re) + ' ± ' + fmt(Math.abs(im)) + 'i';
-          drawPlot(f, []);
-        }
-      } else {
-        const roots = findRoots(f);
-        if (roots.length) {
-          steps.push('Уравнение степени ' + deg + ' — находим корни численно');
-          answer = 'x ≈ ' + roots.map(r => (+r.toFixed(6)).toString()).join(', ');
-        } else {
-          steps.push('Уравнение степени ' + deg);
-          answer = 'Действительных корней не найдено';
-        }
-        drawPlot(f, roots);
-      }
-    } else {
+// ==================== РЕШАТЕЛЬ (ALLATOR) ====================
+const eqInput=document.getElementById('eq');
+const btn=document.getElementById('btn');
+const result=document.getElementById('result');
+const err=document.getElementById('err');
+const chart=document.getElementById('chart');
+const ctx=chart.getContext('2d');
+function fmt(x){if(Number.isInteger(x))return x.toString();return(+x.toFixed(4)).toString()}
+function polyStr(c){const parts=[];for(let i=c.length-1;i>=0;i--){if(Math.abs(c[i])<1e-12)continue;const s=c[i]<0?'− ':(parts.length?'+ ':'');const a=Math.abs(c[i]);
+  if(i===0)parts.push(s+fmt(a));else if(i===1)parts.push(s+(a===1?'':fmt(a))+'x');else parts.push(s+(a===1?'':fmt(a))+'x^'+i)}return parts.length?parts.join(' '):'0'}
+function solve(){
+  err.style.display='none';result.style.display='none';chart.style.display='none';
+  const raw=eqInput.value.trim();if(!raw)return;
+  try{
+    const eqParts=raw.split('=');
+    if(eqParts.length!==2)throw new Error('нужен ровно один знак «=»');
+    const L=parse(tokenize(eqParts[0])),R=parse(tokenize(eqParts[1]));
+    if(!hasX(L)&&!hasX(R))throw new Error('в уравнении нет переменной x');
+    const F={t:'op',op:'-',l:L,r:R};const f=x=>evalNode(F,x);
+    const steps=[];let answer='';
+    const poly=toPoly(F,8);
+    if(poly){
+      while(poly.length>1&&Math.abs(poly[poly.length-1])<1e-12)poly.pop();
+      const deg=poly.length-1;
+      steps.push('Переносим всё в левую часть: '+polyStr(poly)+' = 0');
+      if(deg===0){answer=Math.abs(poly[0])<1e-12?'Верно при любом x':'Решений нет'}
+      else if(deg===1){const x=-poly[0]/poly[1];steps.push('Это линейное уравнение: x = '+fmt(-poly[0])+' / '+fmt(poly[1]));answer='x = '+fmt(x);drawPlot(f,[x])}
+      else if(deg===2){const a=poly[2],b=poly[1],c=poly[0];const D=b*b-4*a*c;
+        steps.push('Дискриминант: D = b² − 4ac = '+fmt(b*b)+' − '+fmt(4*a*c)+' = '+fmt(D));
+        if(D>0){const x1=(-b+Math.sqrt(D))/(2*a),x2=(-b-Math.sqrt(D))/(2*a);steps.push('D > 0 — два корня');answer='x₁ = '+fmt(x1)+', x₂ = '+fmt(x2);drawPlot(f,[x1,x2])}
+        else if(Math.abs(D)<1e-12){const x=-b/(2*a);steps.push('D = 0 — один корень');answer='x = '+fmt(x);drawPlot(f,[x])}
+        else{const re=-b/(2*a),im=Math.sqrt(-D)/(2*a);steps.push('D < 0 — действительных корней нет');answer='x = '+fmt(re)+' ± '+fmt(Math.abs(im))+'i';drawPlot(f,[])}}
+      else{const roots=findRoots(f);
+        if(roots.length){steps.push('Уравнение степени '+deg+' — находим корни численно');answer='x ≈ '+roots.map(r=>(+r.toFixed(6)).toString()).join(', ')}
+        else{steps.push('Уравнение степени '+deg);answer='Действительных корней не найдено'}
+        drawPlot(f,roots)}
+    }else{
       steps.push('Уравнение с функциями — решаем численно');
-      const roots = findRoots(f);
-      if (roots.length) {
-        answer = 'x ≈ ' + roots.map(r => (+r.toFixed(6)).toString()).join(',  ');
-        steps.push('Найдено корней: ' + roots.length + ' (в диапазоне поиска)');
-      } else {
-        answer = 'Действительных корней не найдено (возможно, их нет или они далеко)';
-      }
-      drawPlot(f, roots);
+      const roots=findRoots(f);
+      if(roots.length){answer='x ≈ '+roots.map(r=>(+r.toFixed(6)).toString()).join(',  ');steps.push('Найдено корней: '+roots.length+' (в диапазоне поиска)')}
+      else answer='Действительных корней не найдено (возможно, их нет или они далеко)';
+      drawPlot(f,roots);
     }
-
-    result.innerHTML =
-      '<div class="steps">' + steps.map(s => '<div>' + s + '</div>').join('') + '</div>' +
-      '<div class="answer">' + answer + '</div>';
-    result.style.display = 'block';
-  } catch (e) {
-    err.textContent = 'Не получилось разобрать уравнение: ' + e.message;
-    err.style.display = 'block';
-  }
+    result.innerHTML='<div class="steps">'+steps.map(s=>'<div>'+s+'</div>').join('')+'</div><div class="answer">'+answer+'</div>';
+    result.style.display='block';
+  }catch(e){err.textContent='Не получилось разобрать уравнение: '+e.message;err.style.display='block'}
 }
-
-btn.onclick = solve;
-eqInput.addEventListener('keydown', e => { if (e.key === 'Enter') solve(); });
-
-// Клавиатурка: вставка в позицию курсора
-document.querySelectorAll('.key[data-ins]').forEach(k => {
-  k.addEventListener('click', () => {
-    const text = k.dataset.ins;
-    const start = eqInput.selectionStart ?? eqInput.value.length;
-    const end = eqInput.selectionEnd ?? eqInput.value.length;
-    eqInput.value = eqInput.value.slice(0, start) + text + eqInput.value.slice(end);
-    const pos = start + text.length;
-    eqInput.focus();
-    eqInput.setSelectionRange(pos, pos);
+btn.onclick=solve;
+eqInput.addEventListener('keydown',e=>{if(e.key==='Enter')solve()});
+document.querySelectorAll('.key[data-ins]').forEach(k=>{
+  k.addEventListener('click',()=>{
+    const text=k.dataset.ins;
+    const start=eqInput.selectionStart??eqInput.value.length;
+    const end=eqInput.selectionEnd??eqInput.value.length;
+    eqInput.value=eqInput.value.slice(0,start)+text+eqInput.value.slice(end);
+    eqInput.focus();eqInput.setSelectionRange(start+text.length,start+text.length);
   });
 });
-
-document.querySelector('.key[data-del]').addEventListener('click', () => {
-  const start = eqInput.selectionStart ?? eqInput.value.length;
-  const end = eqInput.selectionEnd ?? eqInput.value.length;
-  if (start === end && start > 0) {
-    eqInput.value = eqInput.value.slice(0, start - 1) + eqInput.value.slice(end);
-    eqInput.focus();
-    eqInput.setSelectionRange(start - 1, start - 1);
-  } else if (start !== end) {
-    eqInput.value = eqInput.value.slice(0, start) + eqInput.value.slice(end);
-    eqInput.focus();
-    eqInput.setSelectionRange(start, start);
+document.querySelector('.key[data-del]').addEventListener('click',()=>{
+  const start=eqInput.selectionStart??eqInput.value.length;
+  const end=eqInput.selectionEnd??eqInput.value.length;
+  if(start===end&&start>0){eqInput.value=eqInput.value.slice(0,start-1)+eqInput.value.slice(end);eqInput.focus();eqInput.setSelectionRange(start-1,start-1)}
+  else if(start!==end){eqInput.value=eqInput.value.slice(0,start)+eqInput.value.slice(end);eqInput.focus();eqInput.setSelectionRange(start,start)}
+});
+document.querySelector('.key[data-clear]').addEventListener('click',()=>{eqInput.value='';eqInput.focus()});
+document.querySelectorAll('.ex').forEach(b=>{b.onclick=()=>{eqInput.value=b.textContent;solve()}});
+// ==================== МЕНЮ ====================
+const menuBtn=document.getElementById('menuBtn');
+const menu=document.getElementById('menu');
+menuBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  menu.classList.toggle('open');
+  menuBtn.classList.toggle('active',menu.classList.contains('open'));
+});
+document.addEventListener('click',e=>{
+  if(!menu.contains(e.target)&&e.target!==menuBtn){
+    menu.classList.remove('open');
+    menuBtn.classList.remove('active');
   }
 });
-
-document.querySelector('.key[data-clear]').addEventListener('click', () => {
-  eqInput.value = '';
-  eqInput.focus();
+// обработчики пунктов меню
+document.querySelectorAll('.menu-item[data-open]').forEach(item=>{
+  item.addEventListener('click',()=>{
+    const what=item.dataset.open;
+    menu.classList.remove('open');
+    menuBtn.classList.remove('active');
+    if(what==='calc'){calcOverlay.classList.add('open');calcDisplay.focus()}
+    else if(what==='chem'){chemOverlay.classList.add('open');chemInput.focus()}
+    else if(what==='allator'){
+      // Allator — главная страница: просто закрываем все окна
+      calcOverlay.classList.remove('open');
+      chemOverlay.classList.remove('open');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  });
 });
-
-document.querySelectorAll('.ex').forEach(b => {
-  b.onclick = () => { eqInput.value = b.textContent; solve(); };
-});
-
 // ==================== ТЕМЫ И ЦВЕТА ====================
-const themesBox = document.getElementById('themes');
-const customBtn = document.getElementById('customBtn');
-const panel = document.getElementById('panel');
-
-const PRESETS_BG = [
-  ['#667eea', '#764ba2', 'Сирень'],
-  ['#f5576c', '#f093fb', 'Закат'],
-  ['#11998e', '#38ef7d', 'Лайм'],
-  ['#f7971e', '#ffd200', 'Солнце'],
-  ['#000428', '#004e92', 'Океан'],
-  ['#c31432', '#240b36', 'Гранат'],
-  ['#0f0c29', '#302b63', 'Космос'],
-  ['#fc4a1a', '#f7b733', 'Пламя'],
-  ['#43cea2', '#185a9d', 'Мята'],
-  ['#41295a', '#2F0743', 'Ночь']
+const themesBox=document.getElementById('themes');
+const customBtn=document.getElementById('customBtn');
+const panel=document.getElementById('panel');
+const PRESETS_BG=[
+  ['#667eea','#764ba2','Сирень'],['#f5576c','#f093fb','Закат'],['#11998e','#38ef7d','Лайм'],
+  ['#f7971e','#ffd200','Солнце'],['#000428','#004e92','Океан'],['#c31432','#240b36','Гранат'],
+  ['#0f0c29','#302b63','Космос'],['#fc4a1a','#f7b733','Пламя'],['#43cea2','#185a9d','Мята'],['#41295a','#2F0743','Ночь']
 ];
-
-const PRESETS_BTN = [
-  ['#667eea', '#764ba2', 'Сирень'],
-  ['#f5576c', '#f093fb', 'Роза'],
-  ['#11998e', '#38ef7d', 'Лайм'],
-  ['#f7971e', '#ffd200', 'Мандарин'],
-  ['#004e92', '#11998e', 'Изумруд'],
-  ['#c31432', '#8e0e00', 'Рубин'],
-  ['#8E2DE2', '#4A00E0', 'Электро'],
-  ['#fc4a1a', '#f7b733', 'Пламя'],
-  ['#2193b0', '#6dd5ed', 'Лагуна'],
-  ['#232526', '#414345', 'Графит']
+const PRESETS_BTN=[
+  ['#667eea','#764ba2','Сирень'],['#f5576c','#f093fb','Роза'],['#11998e','#38ef7d','Лайм'],
+  ['#f7971e','#ffd200','Мандарин'],['#004e92','#11998e','Изумруд'],['#c31432','#8e0e00','Рубин'],
+  ['#8E2DE2','#4A00E0','Электро'],['#fc4a1a','#f7b733','Пламя'],['#2193b0','#6dd5ed','Лагуна'],['#232526','#414345','Графит']
 ];
-
-customBtn.addEventListener('click', () => {
+customBtn.addEventListener('click',()=>{
   panel.classList.toggle('open');
-  customBtn.classList.toggle('active', panel.classList.contains('open'));
+  customBtn.classList.toggle('active',panel.classList.contains('open'));
 });
-
-function makeSwatches(boxId, presets, storageKey, cssVar1, cssVar2) {
-  const box = document.getElementById(boxId);
-  const savedIdx = localStorage.getItem(storageKey);
-  presets.forEach((p, idx) => {
-    const sw = document.createElement('button');
-    sw.className = 'swatch' + (String(idx) === savedIdx ? ' active' : '');
-    sw.title = p[2];
-    sw.textContent = p[2];
-    sw.style.background = 'linear-gradient(135deg, ' + p[0] + ', ' + p[1] + ')';
-    sw.onclick = () => {
-      document.documentElement.style.setProperty(cssVar1, p[0]);
-      document.documentElement.style.setProperty(cssVar2, p[1]);
-      localStorage.setItem(storageKey, idx);
-      box.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+function makeSwatches(boxId,presets,storageKey,cssVar1,cssVar2){
+  const box=document.getElementById(boxId);
+  const savedIdx=localStorage.getItem(storageKey);
+  presets.forEach((p,idx)=>{
+    const sw=document.createElement('button');
+    sw.className='swatch'+(String(idx)===savedIdx?' active':'');
+    sw.title=p[2];sw.textContent=p[2];
+    sw.style.background='linear-gradient(135deg,'+p[0]+','+p[1]+')';
+    sw.onclick=()=>{
+      document.documentElement.style.setProperty(cssVar1,p[0]);
+      document.documentElement.style.setProperty(cssVar2,p[1]);
+      localStorage.setItem(storageKey,idx);
+      box.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
       sw.classList.add('active');
     };
     box.appendChild(sw);
   });
-  if (savedIdx !== null && presets[savedIdx]) {
-    document.documentElement.style.setProperty(cssVar1, presets[savedIdx][0]);
-    document.documentElement.style.setProperty(cssVar2, presets[savedIdx][1]);
+  if(savedIdx!==null&&presets[savedIdx]){
+    document.documentElement.style.setProperty(cssVar1,presets[savedIdx][0]);
+    document.documentElement.style.setProperty(cssVar2,presets[savedIdx][1]);
   }
 }
-
-makeSwatches('swBg', PRESETS_BG, 'solver-bg', '--bg-grad-1', '--bg-grad-2');
-makeSwatches('swBtn', PRESETS_BTN, 'solver-btn', '--btn-grad-1', '--btn-grad-2');
-
-document.getElementById('resetColors').onclick = () => {
+makeSwatches('swBg',PRESETS_BG,'solver-bg','--bg-grad-1','--bg-grad-2');
+makeSwatches('swBtn',PRESETS_BTN,'solver-btn','--btn-grad-1','--btn-grad-2');
+document.getElementById('resetColors').onclick=()=>{
   localStorage.removeItem('solver-bg');
   localStorage.removeItem('solver-btn');
   document.documentElement.style.removeProperty('--bg-grad-1');
   document.documentElement.style.removeProperty('--bg-grad-2');
   document.documentElement.style.removeProperty('--btn-grad-1');
   document.documentElement.style.removeProperty('--btn-grad-2');
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
   scheduleChartRedraw();
 };
-
-let currentTheme = localStorage.getItem('solver-theme') || 'light';
-document.documentElement.setAttribute('data-theme', currentTheme);
-themesBox.querySelectorAll('.theme-btn').forEach(b =>
-  b.classList.toggle('active', b.dataset.theme === currentTheme));
-
-themesBox.querySelectorAll('.theme-btn').forEach(b => {
-  b.addEventListener('click', () => {
-    currentTheme = b.dataset.theme;
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    localStorage.setItem('solver-theme', currentTheme);
-    themesBox.querySelectorAll('.theme-btn').forEach(x =>
-      x.classList.toggle('active', x.dataset.theme === currentTheme));
+let currentTheme=localStorage.getItem('solver-theme')||'light';
+document.documentElement.setAttribute('data-theme',currentTheme);
+themesBox.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===currentTheme));
+themesBox.querySelectorAll('.theme-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    currentTheme=b.dataset.theme;
+    document.documentElement.setAttribute('data-theme',currentTheme);
+    localStorage.setItem('solver-theme',currentTheme);
+    themesBox.querySelectorAll('.theme-btn').forEach(x=>x.classList.toggle('active',x.dataset.theme===currentTheme));
     document.getElementById('resetColors').onclick();
   });
 });
-
 // ==================== КАЛЬКУЛЯТОР ====================
-const calcBtn = document.getElementById('calcBtn');
-const calcOverlay = document.getElementById('calcOverlay');
-const calcClose = document.getElementById('calcClose');
-const calcDisplay = document.getElementById('calcDisplay');
-const calcPrev = document.getElementById('calcPrev');
-
-let lastAns = 0; // Ans — последний ответ
-
-calcBtn.addEventListener('click', () => {
-  calcOverlay.classList.add('open');
-  calcBtn.classList.add('active');
-  calcDisplay.focus();
-});
-
-function closeCalc() {
-  calcOverlay.classList.remove('open');
-  calcBtn.classList.remove('active');
-}
-calcClose.addEventListener('click', closeCalc);
-calcOverlay.addEventListener('click', e => { if (e.target === calcOverlay) closeCalc(); });
-
-// вставка в дисплей калькулятора
-document.querySelectorAll('.ckey[data-cins]').forEach(k => {
-  k.addEventListener('click', () => {
-    const text = k.dataset.cins;
-    const start = calcDisplay.selectionStart ?? calcDisplay.value.length;
-    const end = calcDisplay.selectionEnd ?? calcDisplay.value.length;
-    calcDisplay.value = calcDisplay.value.slice(0, start) + text + calcDisplay.value.slice(end);
+const calcOverlay=document.getElementById('calcOverlay');
+const calcClose=document.getElementById('calcClose');
+const calcDisplay=document.getElementById('calcDisplay');
+const calcPrev=document.getElementById('calcPrev');
+let lastAns=0;
+calcClose.addEventListener('click',()=>calcOverlay.classList.remove('open'));
+calcOverlay.addEventListener('click',e=>{if(e.target===calcOverlay)calcOverlay.classList.remove('open')});
+document.querySelectorAll('.ckey[data-cins]').forEach(k=>{
+  k.addEventListener('click',()=>{
+    const text=k.dataset.cins;
+    const start=calcDisplay.selectionStart??calcDisplay.value.length;
+    const end=calcDisplay.selectionEnd??calcDisplay.value.length;
+    calcDisplay.value=calcDisplay.value.slice(0,start)+text+calcDisplay.value.slice(end);
     calcDisplay.focus();
-    calcDisplay.setSelectionRange(start + text.length, start + text.length);
+    calcDisplay.setSelectionRange(start+text.length,start+text.length);
   });
 });
-
-document.querySelector('.ckey[data-cdel]').addEventListener('click', () => {
-  const start = calcDisplay.selectionStart ?? calcDisplay.value.length;
-  const end = calcDisplay.selectionEnd ?? calcDisplay.value.length;
-  if (start === end && start > 0) {
-    calcDisplay.value = calcDisplay.value.slice(0, start - 1) + calcDisplay.value.slice(end);
-    calcDisplay.focus();
-    calcDisplay.setSelectionRange(start - 1, start - 1);
-  } else if (start !== end) {
-    calcDisplay.value = calcDisplay.value.slice(0, start) + calcDisplay.value.slice(end);
-    calcDisplay.focus();
-    calcDisplay.setSelectionRange(start, start);
+document.querySelector('.ckey[data-cdel]').addEventListener('click',()=>{
+  const start=calcDisplay.selectionStart??calcDisplay.value.length;
+  const end=calcDisplay.selectionEnd??calcDisplay.value.length;
+  if(start===end&&start>0){calcDisplay.value=calcDisplay.value.slice(0,start-1)+calcDisplay.value.slice(end);calcDisplay.focus();calcDisplay.setSelectionRange(start-1,start-1)}
+  else if(start!==end){calcDisplay.value=calcDisplay.value.slice(0,start)+calcDisplay.value.slice(end);calcDisplay.focus();calcDisplay.setSelectionRange(start,start)}
+});
+document.querySelector('.ckey[data-cins="C"]').addEventListener('click',()=>{
+  calcDisplay.value='';calcPrev.textContent='';calcDisplay.focus();
+});
+function calcCompute(){
+  const raw=calcDisplay.value.trim();if(!raw)return;
+  try{
+    const node=parse(tokenize(raw));
+    const val=evalNode(node,lastAns); // x в калькуляторе = Ans
+    if(isNaN(val))throw new Error('не определено');
+    if(!isFinite(val))throw new Error('слишком большое число');
+    calcPrev.textContent=raw+' =';
+    calcDisplay.value=(Number.isInteger(val)?val:+val.toFixed(10)).toString();
+    lastAns=val;
+  }catch(e){calcPrev.textContent='Ошибка: '+e.message}
+}
+document.querySelector('.ckey[data-ceq]').addEventListener('click',calcCompute);
+calcDisplay.addEventListener('keydown',e=>{if(e.key==='Enter')calcCompute()});
+// ==================== ХИМИЧЕСКИЙ КАЛЬКУЛЯТОР ====================
+const ATOMS={H:1.008,He:4.003,Li:6.94,Be:9.012,B:10.81,C:12.011,N:14.007,O:15.999,F:18.998,Ne:20.180,
+Na:22.990,Mg:24.305,Al:26.982,Si:28.085,P:30.974,S:32.06,Cl:35.45,Ar:39.948,K:39.098,Ca:40.078,
+Sc:44.956,Ti:47.867,V:50.942,Cr:51.996,Mn:54.938,Fe:55.845,Co:58.933,Ni:58.693,Cu:63.546,Zn:65.38,
+Ga:69.723,Ge:72.63,As:74.922,Se:78.971,Br:79.904,Kr:83.798,Rb:85.468,Sr:87.62,Y:88.906,Zr:91.224,
+Nb:92.906,Mo:95.95,Tc:98,Ru:101.07,Rh:102.91,Pd:106.42,Ag:107.87,Cd:112.41,In:114.82,Sn:118.71,
+Sb:121.76,Te:127.60,I:126.90,Xe:131.29,Cs:132.91,Ba:137.33,La:138.91,Ce:140.12,Pr:140.91,Nd:144.24,
+Pm:145,Sm:150.36,Eu:151.96,Gd:157.25,Tb:158.93,Dy:162.50,Ho:164.93,Er:167.26,Tm:168.93,Yb:173.05,
+Lu:174.97,Hf:178.49,Ta:180.95,W:183.84,Re:186.21,Os:190.23,Ir:192.22,Pt:195.08,Au:196.97,
+Hg:200.59,Tl:204.38,Pb:207.2,Bi:208.98,Po:209,At:210,Rn:222,Fr:223,Ra:226,Ac:227,Th:232.04,
+Pa:231.04,U:238.03,Np:237,Pu:244,Am:243,Cm:247,Bk:247,Cf:251,Es:252,Fm:257,Md:258,No:259,Lr:262};
+const chemOverlay=document.getElementById('chemOverlay');
+const chemClose=document.getElementById('chemClose');
+const chemInput=document.getElementById('chemInput');
+const chemErr=document.getElementById('chemErr');
+const chemRes=document.getElementById('chemRes');
+chemClose.addEventListener('click',()=>chemOverlay.classList.remove('open'));
+chemOverlay.addEventListener('click',e=>{if(e.target===chemOverlay)chemOverlay.classList.remove('open')});
+function parseFormula(f){
+  const counts={};let i=0;
+  function element(){
+    if(i>=f.length||!/[A-Z]/.test(f[i]))throw new Error('ожидался символ элемента');
+    let sym=f[i];i++;
+    while(i<f.length&&/[a-z]/.test(f[i])){sym+=f[i];i++}
+    if(!ATOMS[sym])throw new Error('неизвестный элемент: «'+sym+'»');
+    let mult=1;
+    if(i<f.length&&/[0-9]/.test(f[i])){
+      let num='';
+      while(i<f.length&&/[0-9]/.test(f[i])){num+=f[i];i++}
+      mult=parseInt(num);
+    }
+    counts[sym]=(counts[sym]||0)+mult;
+    return ATOMS[sym]*mult;
   }
-});
-
-document.querySelector('.ckey[data-cins="C"]').addEventListener('click', () => {
-  calcDisplay.value = '';
-  calcPrev.textContent = '';
-  calcDisplay.focus();
-});
-
-function calcCompute() {
-  const raw = calcDisplay.value.trim();
-  if (!raw) return;
-  try {
-    // в калькуляторе x означает Ans (последний ответ)
-    const node = parse(tokenize(raw));
-    const val = evalNode(node, lastAns);
-    if (!isFinite(val) && !isNaN(val)) throw new Error('слишком большое число');
-    if (isNaN(val)) throw new Error('не определено');
-    calcPrev.textContent = raw + ' =';
-    calcDisplay.value = fmt(calcPretty(val));
-    lastAns = val;
-  } catch (e) {
-    calcPrev.textContent = 'Ошибка: ' + e.message;
+  function group(){
+    let total=0;
+    while(i<f.length){
+      if(f[i]==='('){
+        i++;
+        let inner=0;
+        // рекурсивно считаем содержимое скобок
+        while(i<f.length&&f[i]!==')')inner+=element();
+        if(i>=f.length)throw new Error('не закрыта скобка');
+        i++; // съедаем )
+        let mult=1;
+        if(i<f.length&&/[0-9]/.test(f[i])){
+          let num='';
+          while(i<f.length&&/[0-9]/.test(f[i])){num+=f[i];i++}
+          mult=parseInt(num);
+        }
+        total+=inner*mult;
+      }else if(f[i]===')'){break}
+      else if(f[i]==='·'||f[i]==='*'||f[i]==='∙'){
+        i++;
+        let mult=1;
+        if(i<f.length&&/[0-9]/.test(f[i])){
+          let num='';
+          while(i<f.length&&/[0-9]/.test(f[i])){num+=f[i];i++}
+          mult=parseInt(num);
+        }
+        total+=element()*mult;
+      }
+      else total+=element();
+    }
+    return total;
+  }
+  const total=group();
+  return {total,counts};
+}
+function chemCalc(){
+  chemErr.style.display='none';chemRes.style.display='none';
+  const raw=chemInput.value.trim();if(!raw)return;
+  try{
+    const {total,counts}=parseFormula(raw);
+    const parts=Object.entries(counts)
+      .map(([el,n])=>el+(n>1?n:'')+' × '+ATOMS[el].toFixed(3)+(n>1?' = '+(ATOMS[el]*n).toFixed(3):''))
+      .join('<br>');
+    chemRes.innerHTML='<div>'+parts+'</div><div class="answer">M('+raw+') = '+total.toFixed(2)+' г/моль</div>';
+    chemRes.style.display='block';
+  }catch(e){
+    chemErr.textContent='Не разобрал формулу: '+e.message;
+    chemErr.style.display='block';
   }
 }
-
-// красивый вывод: длинные дроби округляем, целые показываем как есть
-function calcPretty(v) {
-  if (Number.isInteger(v)) return v;
-  return +v.toFixed(10);
-}
-
-document.querySelector('.ckey[data-ceq]').addEventListener('click', calcCompute);
-calcDisplay.addEventListener('keydown', e => { if (e.key === 'Enter') calcCompute(); });
-
+chemInput.addEventListener('keydown',e=>{if(e.key==='Enter')chemCalc()});
+chemInput.addEventListener('input',chemCalc);
 // ==================== ГРАФИК ====================
-let gridCol = '#eeeafc', axisCol = '#c8c4e8', curveCol = '#667eea', rootCol = '#e17055';
-let lastF = null, lastRoots = [];
-
-function scheduleChartRedraw() {
-  if (lastF) setTimeout(() => drawPlot(lastF, lastRoots), 60);
+let gridCol='#eeeafc',axisCol='#c8c4e8',curveCol='#667eea',rootCol='#e17055';
+let lastF=null,lastRoots=[];
+function scheduleChartRedraw(){if(lastF)setTimeout(()=>drawPlot(lastF,lastRoots),60)}
+function readChartColors(){
+  const m=getComputedStyle(document.documentElement);
+  gridCol=m.getPropertyValue('--grid-line').trim();
+  axisCol=m.getPropertyValue('--axis-line').trim();
+  curveCol=m.getPropertyValue('--accent').trim();
+  rootCol=m.getPropertyValue('--root-dot').trim();
 }
-
-function readChartColors() {
-  const m = getComputedStyle(document.documentElement);
-  gridCol = m.getPropertyValue('--grid-line').trim();
-  axisCol = m.getPropertyValue('--axis-line').trim();
-  curveCol = m.getPropertyValue('--accent').trim();
-  rootCol = m.getPropertyValue('--root-dot').trim();
-}
-
-function drawPlot(f, roots) {
-  lastF = f; lastRoots = roots;
+function drawPlot(f,roots){
+  lastF=f;lastRoots=roots;
   readChartColors();
-
-  chart.style.display = 'block';
-  const dpr = window.devicePixelRatio || 1;
-  const cssW = chart.clientWidth || 500;
-  const cssH = 260;
-  chart.width = cssW * dpr;
-  chart.height = cssH * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const W = cssW, H = cssH;
-  ctx.clearRect(0, 0, W, H);
-
-  let cx = 0, span = 10;
-  if (roots.length) {
-    cx = roots.reduce((s, r) => s + r, 0) / roots.length;
-    const spread = Math.max(...roots.map(r => Math.abs(r - cx)));
-    span = Math.max(6, spread * 2.5 + 2, Math.abs(cx) * 0.6 + 3);
+  chart.style.display='block';
+  const dpr=window.devicePixelRatio||1;
+  const cssW=chart.clientWidth||500;
+  const cssH=260;
+  chart.width=cssW*dpr;
+  chart.height=cssH*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const W=cssW,H=cssH;
+  ctx.clearRect(0,0,W,H);
+  let cx=0,span=10;
+  if(roots.length){
+    cx=roots.reduce((s,r)=>s+r,0)/roots.length;
+    const spread=Math.max(...roots.map(r=>Math.abs(r-cx)));
+    span=Math.max(6,spread*2.5+2,Math.abs(cx)*0.6+3);
   }
-
-  const toX = x => W / 2 + (x - cx) * (W / span) / 2;
-  let yMin = Infinity, yMax = -Infinity;
-  const N = 400;
-  for (let i = 0; i <= N; i++) {
-    const y = f(cx - span / 2 + span * i / N);
-    if (isFinite(y)) { yMin = Math.min(yMin, y); yMax = Math.max(yMax, y); }
+  const toX=x=>W/2+(x-cx)*(W/span)/2;
+  let yMin=Infinity,yMax=-Infinity;
+  const N=400;
+  for(let i=0;i<=N;i++){
+    const y=f(cx-span/2+span*i/N);
+    if(isFinite(y)){yMin=Math.min(yMin,y);yMax=Math.max(yMax,y)}
   }
-  if (!isFinite(yMin)) { yMin = -5; yMax = 5; }
-  yMin = Math.min(yMin, 0); yMax = Math.max(yMax, 0);
-  let ySpan = yMax - yMin || 1;
-  if (ySpan > span * 2) ySpan = span * 2;
-  const yMid = (yMin + yMax) / 2;
-  const toY = y => H / 2 - Math.max(-ySpan / 2, Math.min(ySpan / 2, y - yMid)) * (H - 30) / ySpan;
-
-  ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
-  for (let gx = 0; gx <= W; gx += W / 12) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
-
-  ctx.strokeStyle = axisCol;
-  const y0 = toY(0), x0 = toX(0);
-  if (y0 >= 0 && y0 <= H) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); }
-  if (x0 >= 0 && x0 <= W) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke(); }
-
-  ctx.strokeStyle = curveCol; ctx.lineWidth = 3;
+  if(!isFinite(yMin)){yMin=-5;yMax=5}
+  yMin=Math.min(yMin,0);yMax=Math.max(yMax,0);
+  let ySpan=yMax-yMin||1;
+  if(ySpan>span*2)ySpan=span*2;
+  const yMid=(yMin+yMax)/2;
+  const toY=y=>H/2-Math.max(-ySpan/2,Math.min(ySpan/2,y-yMid))*(H-30)/ySpan;
+  ctx.strokeStyle=gridCol;ctx.lineWidth=1;
+  for(let gx=0;gx<=W;gx+=W/12){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke()}
+  ctx.strokeStyle=axisCol;
+  const y0=toY(0),x0=toX(0);
+  if(y0>=0&&y0<=H){ctx.beginPath();ctx.moveTo(0,y0);ctx.lineTo(W,y0);ctx.stroke()}
+  if(x0>=0&&x0<=W){ctx.beginPath();ctx.moveTo(x0,0);ctx.lineTo(x0,H);ctx.stroke()}
+  ctx.strokeStyle=curveCol;ctx.lineWidth=3;
   ctx.beginPath();
-  let started = false, prevY = null;
-  for (let i = 0; i <= N; i++) {
-    const x = cx - span / 2 + span * i / N;
-    const y = f(x);
-    if (!isFinite(y)) { started = false; prevY = null; continue; }
-    if (prevY !== null && Math.abs(y - prevY) > ySpan) started = false;
-    const py = toY(y);
-    if (py < -H || py > 2 * H) { started = false; prevY = y; continue; }
-    if (!started) { ctx.moveTo(toX(x), py); started = true; }
-    else ctx.lineTo(toX(x), py);
-    prevY = y;
+  let started=false,prevY=null;
+  for(let i=0;i<=N;i++){
+    const x=cx-span/2+span*i/N;
+    const y=f(x);
+    if(!isFinite(y)){started=false;prevY=null;continue}
+    if(prevY!==null&&Math.abs(y-prevY)>ySpan)started=false;
+    const py=toY(y);
+    if(py<-H||py>2*H){started=false;prevY=y;continue}
+    if(!started){ctx.moveTo(toX(x),py);started=true}
+    else ctx.lineTo(toX(x),py);
+    prevY=y;
   }
   ctx.stroke();
-
-  ctx.fillStyle = rootCol;
-  roots.forEach(r => {
+  ctx.fillStyle=rootCol;
+  roots.forEach(r=>{
     ctx.beginPath();
-    ctx.arc(toX(r), toY(0), 6, 0, Math.PI * 2);
+    ctx.arc(toX(r),toY(0),6,0,Math.PI*2);
     ctx.fill();
   });
 }
